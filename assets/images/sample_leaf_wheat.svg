@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" width="100%" height="100%">
+  <defs>
+    <linearGradient id="wheatFieldBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1C1917"/>
+      <stop offset="100%" stop-color="#292524"/>
+    </linearGradient>
+    <linearGradient id="wheatLeafGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#84CC16"/>
+      <stop offset="50%" stop-color="#65A30D"/>
+      <stop offset="100%" stop-color="#4D7C0F"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="320" height="240" rx="16" fill="url(#wheatFieldBg)"/>
+
+  <!-- Scanning grid overlay -->
+  <line x1="20" y1="60" x2="300" y2="60" stroke="#EAB308" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+  <line x1="20" y1="120" x2="300" y2="120" stroke="#EAB308" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+  <line x1="20" y1="180" x2="300" y2="180" stroke="#EAB308" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.3"/>
+
+  <!-- Main Wheat Leaf Ribbon (Broad blade running horizontally/curving) -->
+  <path d="M 15,160 C 80,140 160,110 240,70 C 275,52 300,32 310,25 C 295,50 250,110 180,155 C 120,195 50,205 15,160 Z" 
+        fill="url(#wheatLeafGrad)"/>
+
+  <!-- Central midrib vein -->
+  <path d="M 15,160 C 110,135 210,90 310,25" stroke="#BEF264" stroke-width="2" fill="none" opacity="0.8"/>
+
+  <!-- Parallel longitudinal veins -->
+  <path d="M 30,175 C 115,145 205,100 280,45" stroke="#4D7C0F" stroke-width="0.8" fill="none"/>
+  <path d="M 20,150 C 105,125 195,80 270,35" stroke="#4D7C0F" stroke-width="0.8" fill="none"/>
+
+  <!-- Yellow Rust Stripe Pustules (Parallel linear stripes along veins) -->
+  <g fill="#FACC15" stroke="#CA8A04" stroke-width="0.5">
+    <!-- Stripe 1 -->
+    <ellipse cx="90" cy="138" rx="2" ry="4" transform="rotate(-25 90 138)"/>
+    <ellipse cx="98" cy="134" rx="2" ry="4.5" transform="rotate(-25 98 134)"/>
+    <ellipse cx="106" cy="130" rx="2" ry="5" transform="rotate(-25 106 130)"/>
+    <ellipse cx="114" cy="126" rx="2" ry="4.5" transform="rotate(-25 114 126)"/>
+    <ellipse cx="122" cy="122" rx="2" ry="4" transform="rotate(-25 122 122)"/>
+    <ellipse cx="130" cy="118" rx="2" ry="4.5" transform="rotate(-25 130 118)"/>
+    <ellipse cx="138" cy="114" rx="2" ry="4.5" transform="rotate(-25 138 114)"/>
+    <ellipse cx="146" cy="110" rx="2" ry="5" transform="rotate(-25 146 110)"/>
+
+    <!-- Stripe 2 (Upper parallel stripe) -->
+    <ellipse cx="110" cy="114" rx="2" ry="4" transform="rotate(-25 110 114)"/>
+    <ellipse cx="118" cy="110" rx="2" ry="4.5" transform="rotate(-25 118 110)"/>
+    <ellipse cx="126" cy="106" rx="2" ry="5" transform="rotate(-25 126 106)"/>
+    <ellipse cx="134" cy="102" rx="2" ry="5" transform="rotate(-25 134 102)"/>
+    <ellipse cx="142" cy="98" rx="2" ry="4.5" transform="rotate(-25 142 98)"/>
+    <ellipse cx="150" cy="94" rx="2" ry="5" transform="rotate(-25 150 94)"/>
+    <ellipse cx="158" cy="90" rx="2" ry="4.5" transform="rotate(-25 158 90)"/>
+    <ellipse cx="166" cy="86" rx="2" ry="4" transform="rotate(-25 166 86)"/>
+    <ellipse cx="174" cy="82" rx="2" ry="4.5" transform="rotate(-25 174 82)"/>
+
+    <!-- Stripe 3 (Lower stripe) -->
+    <ellipse cx="130" cy="142" rx="2" ry="4" transform="rotate(-25 130 142)"/>
+    <ellipse cx="138" cy="138" rx="2" ry="4.5" transform="rotate(-25 138 138)"/>
+    <ellipse cx="146" cy="134" rx="2" ry="5" transform="rotate(-25 146 134)"/>
+    <ellipse cx="154" cy="130" rx="2" ry="4.5" transform="rotate(-25 154 130)"/>
+    <ellipse cx="162" cy="126" rx="2" ry="4" transform="rotate(-25 162 126)"/>
+    <ellipse cx="170" cy="122" rx="2" ry="4" transform="rotate(-25 170 122)"/>
+  </g>
+
+  <!-- Brown Rust scatter pustules (Orange-brown, random) -->
+  <g fill="#D97706" stroke="#92400E" stroke-width="0.5">
+    <circle cx="210" cy="85" r="3"/>
+    <circle cx="225" cy="78" r="3.5"/>
+    <circle cx="218" cy="95" r="2.5"/>
+    <circle cx="238" cy="72" r="3"/>
+    <circle cx="200" cy="105" r="3"/>
+  </g>
+
+  <!-- Diagnostic Bounding Box Indicator -->
+  <g stroke="#EAB308" stroke-width="2" fill="none">
+    <!-- Top-left corner -->
+    <path d="M 80,85 L 95,85 M 80,85 L 80,100"/>
+    <!-- Top-right corner -->
+    <path d="M 200,60 L 185,60 M 200,60 L 200,75"/>
+    <!-- Bottom-left corner -->
+    <path d="M 80,165 L 95,165 M 80,165 L 80,150"/>
+    <!-- Bottom-right corner -->
+    <path d="M 200,140 L 185,140 M 200,140 L 200,125"/>
+  </g>
+
+  <!-- Diagnostic badge -->
+  <rect x="18" y="16" width="135" height="26" rx="6" fill="rgba(15, 23, 42, 0.85)" stroke="#EAB308" stroke-width="1"/>
+  <circle cx="28" cy="29" r="4" fill="#EAB308"/>
+  <text x="38" y="33" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="600">Wheat Leaf Sample</text>
+</svg>

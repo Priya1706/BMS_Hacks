@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="wheatBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF3C7"/>
+      <stop offset="100%" stop-color="#FDE68A"/>
+    </linearGradient>
+    <linearGradient id="wheatGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <linearGradient id="wheatSpike" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#92400E"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="200" height="200" rx="24" fill="url(#wheatBg)"/>
+
+  <!-- Earth soil base -->
+  <ellipse cx="100" cy="180" rx="75" ry="12" fill="#D97706" opacity="0.3"/>
+
+  <!-- Wheat Central Stalk -->
+  <path d="M 100,180 L 100,50" stroke="#B45309" stroke-width="4" stroke-linecap="round"/>
+  <!-- Left leaning stalk -->
+  <path d="M 90,180 Q 82,130 75,70" stroke="#D97706" stroke-width="3" stroke-linecap="round"/>
+  <!-- Right leaning stalk -->
+  <path d="M 110,180 Q 118,130 125,70" stroke="#D97706" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Wheat Spikelets (Kernels arranged along ear) -->
+  <g fill="url(#wheatGold)" stroke="#78350F" stroke-width="0.8">
+    <!-- Center Ear -->
+    <!-- Left spikelets -->
+    <ellipse cx="94" cy="52" rx="6" ry="10" transform="rotate(-30 94 52)"/>
+    <ellipse cx="93" cy="68" rx="6" ry="10" transform="rotate(-30 93 68)"/>
+    <ellipse cx="92" cy="84" rx="6" ry="10" transform="rotate(-30 92 84)"/>
+    <ellipse cx="92" cy="100" rx="6" ry="10" transform="rotate(-30 92 100)"/>
+    <ellipse cx="93" cy="116" rx="6" ry="10" transform="rotate(-30 93 116)"/>
+    
+    <!-- Right spikelets -->
+    <ellipse cx="106" cy="52" rx="6" ry="10" transform="rotate(30 106 52)"/>
+    <ellipse cx="107" cy="68" rx="6" ry="10" transform="rotate(30 107 68)"/>
+    <ellipse cx="108" cy="84" rx="6" ry="10" transform="rotate(30 108 84)"/>
+    <ellipse cx="108" cy="100" rx="6" ry="10" transform="rotate(30 108 100)"/>
+    <ellipse cx="107" cy="116" rx="6" ry="10" transform="rotate(30 107 116)"/>
+
+    <!-- Tip spikelet -->
+    <ellipse cx="100" cy="42" rx="5" ry="9"/>
+
+    <!-- Awns (Beards) extending from spikelets -->
+    <line x1="90" y1="48" x2="68" y2="28" stroke="#92400E" stroke-width="1.2"/>
+    <line x1="90" y1="64" x2="66" y2="44" stroke="#92400E" stroke-width="1.2"/>
+    <line x1="88" y1="80" x2="64" y2="60" stroke="#92400E" stroke-width="1.2"/>
+    
+    <line x1="110" y1="48" x2="132" y2="28" stroke="#92400E" stroke-width="1.2"/>
+    <line x1="110" y1="64" x2="134" y2="44" stroke="#92400E" stroke-width="1.2"/>
+    <line x1="112" y1="80" x2="136" y2="60" stroke="#92400E" stroke-width="1.2"/>
+    
+    <line x1="100" y1="36" x2="100" y2="12" stroke="#92400E" stroke-width="1.4"/>
+  </g>
+
+  <!-- Side wheat heads (simplified) -->
+  <g fill="#F59E0B" stroke="#B45309" stroke-width="0.7" opacity="0.85">
+    <ellipse cx="72" cy="72" rx="4" ry="7" transform="rotate(-20 72 72)"/>
+    <ellipse cx="70" cy="84" rx="4" ry="7" transform="rotate(-20 70 84)"/>
+    <ellipse cx="69" cy="96" rx="4" ry="7" transform="rotate(-20 69 96)"/>
+    
+    <ellipse cx="128" cy="72" rx="4" ry="7" transform="rotate(20 128 72)"/>
+    <ellipse cx="130" cy="84" rx="4" ry="7" transform="rotate(20 130 84)"/>
+    <ellipse cx="131" cy="96" rx="4" ry="7" transform="rotate(20 131 96)"/>
+  </g>
+
+  <!-- Wheat badge -->
+  <rect x="46" y="14" width="108" height="26" rx="13" fill="#B45309"/>
+  <text x="100" y="31" fill="#FFFFFF" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" text-anchor="middle">WHEAT (गेहूं)</text>
+</svg>
