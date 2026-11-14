@@ -1,0 +1,50 @@
+{
+  "test_samples": 200,
+  "test_loss": 0.7630743384361267,
+  "test_accuracy": 0.71,
+  "balanced_test_chance_accuracy": 0.25,
+  "predicted_class_counts": {
+    "Black Rust": 34,
+    "Brown Rust": 51,
+    "Yellow Rust": 62,
+    "Powdery Mildew": 53
+  },
+  "training_seconds": 2817.651777267456,
+  "best_epoch": 9,
+  "class_weights": {
+    "Black Rust": 2.6221498371335503,
+    "Brown Rust": 0.7994041708043694,
+    "Yellow Rust": 0.7732949087415946,
+    "Powdery Mildew": 0.930635838150289
+  },
+  "source_train_file_counts": {
+    "Black Rust": 576,
+    "Brown Rust": 1271,
+    "Yellow Rust": 1301,
+    "Powdery Mildew": 1081
+  },
+  "excluded_train_test_duplicate_files": {
+    "Black Rust": 97,
+    "Brown Rust": 11
+  },
+  "unique_train_image_counts_after_leakage_filter": {
+    "Black Rust": 384,
+    "Brown Rust": 1259,
+    "Yellow Rust": 1301,
+    "Powdery Mildew": 1081
+  },
+  "train_samples": 3220,
+  "validation_samples": 805,
+  "class_mapping": {
+    "0": "Black Rust",
+    "1": "Brown Rust",
+    "2": "Yellow Rust",
+    "3": "Powdery Mildew"
+  },
+  "folder_to_label": {
+    "Black Rust": "Black Rust",
+    "Brown Rust": "Brown Rust",
+    "Yellow Rust": "Yellow Rust",
+    "Mildew": "Powdery Mildew"
+  }
+}

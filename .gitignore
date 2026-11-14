@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Datasets
+data/
+
+# Training outputs and temporary files
+*.log
+.ipynb_checkpoints/
+
+# Keep trained models in Git
+!app/models/
+!app/models/*.keras

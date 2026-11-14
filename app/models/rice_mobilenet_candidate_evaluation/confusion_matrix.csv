@@ -1,0 +1,7 @@
+true\pred,Bacterial Leaf Blight,Brown Spot,Healthy Rice Leaf,Leaf Blast,Leaf scald,Sheath Blight
+Bacterial Leaf Blight,3,0,0,1,0,0
+Brown Spot,0,12,2,5,5,0
+Healthy Rice Leaf,0,0,31,0,0,0
+Leaf Blast,1,0,0,1,1,1
+Leaf scald,0,0,0,1,12,2
+Sheath Blight,1,0,3,8,1,33
