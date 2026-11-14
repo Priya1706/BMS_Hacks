@@ -1,0 +1,23 @@
+{
+  "name": "RootCause - Plant Disease Detection & Advisory",
+  "short_name": "RootCause",
+  "description": "Offline-first plant disease detection and agricultural advisory application for farmers.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F8FAF8",
+  "theme_color": "#15803D",
+  "icons": [
+    {
+      "src": "assets/icons/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity",
+    "utilities",
+    "education"
+  ]
+}
