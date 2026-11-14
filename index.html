@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>RootCause - Android Plant Disease Detection & Advisory</title>
+  
+  <!-- PWA & Android Meta Tags -->
+  <meta name="description" content="Offline-first Android Plant Disease Detection and Agricultural Advisory for Rice and Wheat crops.">
+  <meta name="theme-color" content="#15803D">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="assets/icons/logo.svg">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+
+  <!-- Desktop Presentation Wrapper -->
+  <div class="device-presentation-container">
+    
+    <!-- Desktop Presentation Controls -->
+    <div class="desktop-controls">
+      <button id="btn-toggle-frame" class="desktop-btn" title="Toggle Fullscreen or Mobile Frame">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        <span>Toggle Phone Frame</span>
+      </button>
+      <button id="btn-quick-sample" class="desktop-btn" title="Diagnose Sample Rice Leaf">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="10 8 16 12 10 16 10 8"></polygon>
+        </svg>
+        <span>Quick Demo</span>
+      </button>
+    </div>
+
+    <!-- Android Smartphone Frame -->
+    <div id="android-device" class="android-device-frame">
+      
+      <!-- Android Status Bar -->
+      <div class="android-status-bar">
+        <span id="status-clock" class="status-bar-time">09:41</span>
+        <div class="status-bar-notch" title="Camera Punch Hole"></div>
+        <div class="status-bar-icons">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L12 22l7.03-4.39C20.26 16.07 21 14.12 21 12c0-4.97-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/>
+          </svg>
+          <span style="font-size: 11px; font-weight: 700;">5G</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="2" y="7" width="18" height="10" rx="2" ry="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+            <rect x="4" y="9" width="12" height="6" rx="1" ry="1"/>
+            <path d="M22 11v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- App Content Area -->
+      <div class="app-container">
+
+        <!-- Top App Bar -->
+        <header id="top-bar" class="top-app-bar">
+          <div class="top-bar-left">
+            <button id="btn-top-back" class="top-bar-btn" style="display: none;" aria-label="Go Back">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <div id="top-app-title" class="top-bar-title">
+              <img src="assets/icons/logo.svg" alt="RootCause" width="24" height="24">
+              <span>RootCause</span>
+            </div>
+          </div>
+          <div class="top-bar-right">
+            <div class="offline-pill" title="100% Offline Capable">
+              <span class="offline-dot"></span>
+              <span>Offline</span>
+            </div>
+            <button id="btn-top-lang" class="lang-switch-btn" title="Change Language">
+              <span>🌐</span>
+              <span id="top-lang-code">EN</span>
+            </button>
+          </div>
+        </header>
+
+        <!-- Screens Viewport -->
+        <main class="screens-viewport">
+
+          <!-- ==========================================================
+               SCREEN 1: Welcome / Splash Screen
+               ========================================================== -->
+          <section id="screen-welcome" class="app-screen active">
+            <div class="welcome-content-wrap">
+              <div class="welcome-logo-box">
+                <img src="assets/icons/logo.svg" alt="RootCause Logo">
+              </div>
+              <h1 class="welcome-app-name" data-i18n="appName">RootCause</h1>
+              <div class="welcome-tagline" data-i18n="tagline">Healthy Crops, Better Harvests</div>
+              <p class="welcome-subtagline" data-i18n="subtagline">
+                Smart Offline Agricultural Disease Diagnostic & Advisory System
+              </p>
+
+              <div class="welcome-illustration-card">
+                <img src="assets/images/farmer_hero.svg" alt="Farmer in paddy field">
+              </div>
+
+              <div class="welcome-features-list">
+                <div class="welcome-feat-item">
+                  <div class="welcome-feat-icon">⚡</div>
+                  <span class="welcome-feat-label">Offline Instant</span>
+                </div>
+                <div class="welcome-feat-item">
+                  <div class="welcome-feat-icon">🌾</div>
+                  <span class="welcome-feat-label">Rice & Wheat</span>
+                </div>
+                <div class="welcome-feat-item">
+                  <div class="welcome-feat-icon">🔊</div>
+                  <span class="welcome-feat-label">Voice Advisory</span>
+                </div>
+              </div>
+            </div>
+
+            <button id="btn-welcome-start" class="btn btn-primary" style="margin-top: 14px;">
+              <span data-i18n="getStarted">Get Started</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN 2: Home Dashboard
+               ========================================================== -->
+          <section id="screen-dashboard" class="app-screen">
+            <!-- Greeting & Location Banner -->
+            <div class="dashboard-greeting-bar">
+              <div class="greeting-text-box">
+                <h2 data-i18n="greeting">Namaste, Kisan Mitra</h2>
+                <p data-i18n="greetingSubtitle">Protect your crops with fast offline disease detection</p>
+              </div>
+            </div>
+
+            <!-- Hero Main Action: Detect Plant Disease -->
+            <div id="card-hero-detect" class="hero-scan-card">
+              <div class="hero-scan-badge">
+                <span>📷 Instant Scanner</span>
+              </div>
+              <h3 class="hero-scan-title" data-i18n="heroActionTitle">Detect Plant Disease</h3>
+              <p class="hero-scan-desc" data-i18n="heroActionDesc">
+                Take or upload a leaf photo for instant offline diagnosis and treatment advice.
+              </p>
+              <button class="hero-scan-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                <span data-i18n="btnScanNow">Scan Leaf Now</span>
+              </button>
+            </div>
+
+            <!-- Crop Selection Cards -->
+            <div class="section-header">
+              <h3 class="section-title" data-i18n="selectCropTitle">Select Crop to Diagnose</h3>
+              <span class="section-link" id="link-view-all-guides" data-i18n="viewAll">Guides →</span>
+            </div>
+
+            <div class="crops-grid">
+              <!-- Rice Card -->
+              <div id="btn-crop-rice" class="crop-card">
+                <div class="crop-card-img-wrap">
+                  <img src="assets/images/crop_rice.svg" alt="Rice Paddy">
+                </div>
+                <div class="crop-card-title" data-i18n="riceTitle">Rice Paddy (धान)</div>
+                <div class="crop-card-count" data-i18n="riceSubtitle">5 Common Diseases</div>
+              </div>
+
+              <!-- Wheat Card -->
+              <div id="btn-crop-wheat" class="crop-card">
+                <div class="crop-card-img-wrap">
+                  <img src="assets/images/crop_wheat.svg" alt="Wheat">
+                </div>
+                <div class="crop-card-title" data-i18n="wheatTitle">Wheat (गेहूं)</div>
+                <div class="crop-card-count" data-i18n="wheatSubtitle">4 Common Diseases</div>
+              </div>
+            </div>
+
+            <!-- Ask an Agricultural Expert Card (Directly from Jotform workflow) -->
+            <div id="btn-open-jotform-question" class="expert-banner-card">
+              <div class="expert-icon-wrap">💬</div>
+              <div class="expert-text-wrap">
+                <h3 data-i18n="btnAskExpert">Ask a Farming Question</h3>
+                <p>Send your leaf photo and query directly to Krishi experts for personalized advisory.</p>
+              </div>
+            </div>
+
+            <!-- Recent Diagnosis History Quick View -->
+            <div class="section-header">
+              <h3 class="section-title" data-i18n="recentHistoryTitle">Recent Diagnoses</h3>
+              <span class="section-link" id="link-view-all-history" data-i18n="viewAll">History →</span>
+            </div>
+
+            <div id="dashboard-recent-list" class="recent-history-list">
+              <!-- Injected dynamically by app.js -->
+            </div>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN 3: Crop Selection
+               ========================================================== -->
+          <section id="screen-crop-select" class="app-screen">
+            <div class="crop-select-header">
+              <h2 data-i18n="cropSelectHeading">Select Crop for Analysis</h2>
+              <p data-i18n="cropSelectSub">Choose the crop you are inspecting in your field</p>
+            </div>
+
+            <!-- Rice Detail Card -->
+            <div class="crop-detail-card" id="card-select-rice">
+              <div class="crop-detail-hero-img">
+                <img src="assets/images/crop_rice.svg" alt="Rice Crop">
+              </div>
+              <div class="crop-detail-body">
+                <div class="crop-detail-title-row">
+                  <h3 class="crop-detail-title" data-i18n="riceTitle">Rice Paddy (धान)</h3>
+                  <span class="badge badge-healthy">Kharif Crop</span>
+                </div>
+                <div class="crop-detail-sci">Oryza sativa L.</div>
+                <div class="crop-detail-chips">
+                  <span class="crop-chip">5 Diseases Profiled</span>
+                  <span class="crop-chip">Bacterial Blight</span>
+                  <span class="crop-chip">Blast</span>
+                  <span class="crop-chip">Sheath Blight</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button id="btn-proceed-rice" class="btn btn-primary" style="flex: 2;">
+                    <span data-i18n="btnSelectRice">Diagnose Rice</span>
+                  </button>
+                  <button id="btn-guide-rice" class="btn btn-secondary" style="flex: 1;">
+                    <span>Guide</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Wheat Detail Card -->
+            <div class="crop-detail-card" id="card-select-wheat">
+              <div class="crop-detail-hero-img">
+                <img src="assets/images/crop_wheat.svg" alt="Wheat Crop">
+              </div>
+              <div class="crop-detail-body">
+                <div class="crop-detail-title-row">
+                  <h3 class="crop-detail-title" data-i18n="wheatTitle">Wheat (गेहूं)</h3>
+                  <span class="badge badge-moderate">Rabi Crop</span>
+                </div>
+                <div class="crop-detail-sci">Triticum aestivum L.</div>
+                <div class="crop-detail-chips">
+                  <span class="crop-chip">4 Diseases Profiled</span>
+                  <span class="crop-chip">Yellow Rust</span>
+                  <span class="crop-chip">Brown Rust</span>
+                  <span class="crop-chip">Powdery Mildew</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button id="btn-proceed-wheat" class="btn btn-primary" style="flex: 2;">
+                    <span data-i18n="btnSelectWheat">Diagnose Wheat</span>
+                  </button>
+                  <button id="btn-guide-wheat" class="btn btn-secondary" style="flex: 1;">
+                    <span>Guide</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN 4: Image Capture & Upload
+               ========================================================== -->
+          <section id="screen-capture" class="app-screen">
+            <!-- Selected Crop Banner -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <div>
+                <span style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--color-primary-dark);">Target Crop</span>
+                <div id="capture-selected-crop" style="font-size: 18px; font-weight: 800; color: var(--color-text-main);">Rice Paddy (धान)</div>
+              </div>
+              <button id="btn-change-crop" class="btn btn-sm btn-outline">Change Crop</button>
+            </div>
+
+            <!-- Mode Selector Tabs: Camera / Gallery -->
+            <div class="capture-mode-tabs">
+              <button id="tab-camera" class="capture-tab-btn active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                <span data-i18n="tabCamera">Take Photo</span>
+              </button>
+              <button id="tab-gallery" class="capture-tab-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span data-i18n="tabGallery">Choose from Gallery</span>
+              </button>
+            </div>
+
+            <!-- View 1: Live Camera Viewport -->
+            <div id="camera-viewport-box" class="camera-view-container">
+              <video id="camera-video-elem" class="camera-video" autoplay playsinline muted></video>
+              <div class="camera-reticle">
+                <div class="camera-reticle-corners"></div>
+              </div>
+              <div class="camera-overlay-text" data-i18n="cameraPrompt">
+                Position affected leaf inside frame
+              </div>
+            </div>
+
+            <!-- View 2: Image Preview Card (when image is captured or uploaded) -->
+            <div id="image-preview-box" class="image-preview-card" style="display: none;">
+              <img id="leaf-preview-img" src="" alt="Selected leaf preview">
+              <div class="preview-action-bar">
+                <button id="btn-retake-photo" class="btn btn-sm btn-primary">
+                  <span>🔄</span> <span data-i18n="btnRetake">Retake</span>
+                </button>
+                <button id="btn-remove-photo" class="btn btn-sm btn-danger">
+                  <span>✕ Remove</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- View 3: Gallery Drag/Drop File Upload -->
+            <div id="gallery-upload-box" class="gallery-drop-area" style="display: none;">
+              <input type="file" id="file-leaf-input" accept="image/*" style="display: none;">
+              <div class="gallery-icon-circle">📁</div>
+              <h4 style="font-size: 15px; font-weight: 700; margin-bottom: 4px;" data-i18n="btnChooseFile">Select Leaf Image</h4>
+              <p style="font-size: 12.5px; color: var(--color-text-muted); margin-bottom: 14px;">JPG, PNG, or Camera capture</p>
+              <button type="button" id="btn-browse-files" class="btn btn-secondary btn-sm" style="width: auto;">
+                <span>Browse Files</span>
+              </button>
+            </div>
+
+            <!-- Camera Trigger Button -->
+            <div id="camera-controls-bar" style="margin-bottom: 16px;">
+              <button id="btn-snap-photo" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+                </svg>
+                <span data-i18n="btnCapture">Take Picture</span>
+              </button>
+            </div>
+
+            <!-- Tips & Instructions Box -->
+            <div class="instructions-card">
+              <h4 data-i18n="instructionsTitle">Tips for Accurate Diagnosis:</h4>
+              <ul class="instructions-list">
+                <li data-i18n="tip1">Focus closely on the spots or discoloured area.</li>
+                <li data-i18n="tip2">Use bright, natural daylight. Avoid deep shadows.</li>
+                <li data-i18n="tip3">Hold camera steady at 15-20 cm from leaf.</li>
+                <li data-i18n="tip4">Clean dust or water drops from leaf if possible.</li>
+              </ul>
+            </div>
+
+            <!-- Expandable Farmer & Field Info Form (Integrating Jotform fields) -->
+            <div id="toggle-field-details" class="form-details-toggle">
+              <span style="font-size: 13px; font-weight: 700; color: var(--color-primary-dark);" data-i18n="farmerDetailsHeader">
+                Farmer & Field Info (Optional)
+              </span>
+              <span id="field-details-arrow">▼</span>
+            </div>
+
+            <div id="field-details-container" class="form-details-content">
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label class="form-label" data-i18n="firstNamePlaceholder">First Name</label>
+                  <input type="text" id="input-farmer-first" class="form-input" placeholder="e.g. Ramesh">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" data-i18n="lastNamePlaceholder">Last Name</label>
+                  <input type="text" id="input-farmer-last" class="form-input" placeholder="e.g. Patel">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="regionLabel">Region / District</label>
+                <input type="text" id="input-farmer-region" class="form-input" placeholder="e.g. Karnal, Mandya, Ludhiana">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="questionLabel">Field Observations / Notes</label>
+                <textarea id="input-farmer-notes" class="form-textarea" rows="2" placeholder="Describe symptoms or when they started..."></textarea>
+              </div>
+            </div>
+
+            <!-- Primary Action: Run Disease Detection -->
+            <button id="btn-run-diagnosis" class="btn btn-primary" style="margin-bottom: 10px;" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              <span data-i18n="btnAnalyze">Run Disease Detection</span>
+            </button>
+
+            <!-- Test Inconclusive Scenario Button (Demonstrates <60% confidence handling) -->
+            <div style="text-align: center; margin-bottom: 20px;">
+              <button id="btn-test-inconclusive" class="btn btn-sm btn-outline" style="font-size: 11.5px; opacity: 0.85;">
+                <span>🧪 Test Low-Confidence / Inconclusive Scenario</span>
+              </button>
+            </div>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN 5: Disease Detection Results
+               ========================================================== -->
+          <section id="screen-results" class="app-screen">
+            <div class="results-card-hero">
+              <!-- Leaf Image View with Diagnostic Scanner Box -->
+              <div class="results-image-view">
+                <img id="results-leaf-img" src="" alt="Diagnosed leaf">
+                <div class="scanner-laser-line" id="scanner-laser"></div>
+              </div>
+
+              <!-- Header Info -->
+              <div class="results-header-band">
+                <div class="results-crop-tag" id="results-crop-tag">Rice Paddy</div>
+                <h2 class="results-disease-name" id="results-disease-name">Bacterial Leaf Blight</h2>
+                <div class="results-scientific-name" id="results-scientific-name">Xanthomonas oryzae</div>
+
+                <!-- Confidence Score Meter -->
+                <div class="confidence-meter-box">
+                  <div class="confidence-header">
+                    <span class="confidence-title" data-i18n="confidenceScore">Confidence Score</span>
+                    <span class="confidence-score" id="results-conf-score">94.6%</span>
+                  </div>
+                  <div class="confidence-progress-bg">
+                    <div class="confidence-progress-bar" id="results-conf-bar" style="width: 94.6%;"></div>
+                  </div>
+                </div>
+
+                <!-- Status & Demo Pills -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div>
+                    <span style="font-size: 11px; color: var(--color-text-muted);">Severity: </span>
+                    <span class="badge badge-high" id="results-severity-badge">High Severity</span>
+                  </div>
+                  <div class="demo-mode-pill">
+                    <span>🔬 Offline Demo Mode</span>
+                  </div>
+                </div>
+
+                <!-- Key Symptoms Preview -->
+                <div style="background: var(--color-bg); border-radius: var(--radius-sm); padding: 12px; margin-top: 10px;">
+                  <h4 style="font-size: 12.5px; font-weight: 700; margin-bottom: 4px;" data-i18n="keySymptoms">Key Symptoms:</h4>
+                  <p id="results-summary-text" style="font-size: 12.5px; color: var(--color-text-muted); line-height: 1.4;">
+                    Water-soaked stripes along leaf margins turning yellow-white...
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Inconclusive Alert Box (Hidden unless confidence is low or inconclusive triggered) -->
+            <div id="results-inconclusive-box" class="inconclusive-box" style="display: none;">
+              <h3 data-i18n="inconclusiveTitle">
+                <span>⚠️ Disease Not Confidently Identified</span>
+              </h3>
+              <p data-i18n="inconclusiveMsg">
+                The leaf image was not clear enough or symptoms do not match our database with high certainty. Please capture a clearer photo or consult an agricultural expert.
+              </p>
+              <button id="btn-inconclusive-ask-expert" class="btn btn-accent btn-sm">
+                <span data-i18n="btnAskExpert">Ask an Agricultural Expert</span>
+              </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+              <button id="btn-results-view-advisory" class="btn btn-primary">
+                <span data-i18n="btnViewAdvisory">View Full Treatment Advisory</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+
+              <button id="btn-results-save-history" class="btn btn-secondary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                  <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                  <polyline points="7 3 7 8 15 8"></polyline>
+                </svg>
+                <span data-i18n="btnSaveHistory">Save to Diagnosis History</span>
+              </button>
+
+              <button id="btn-results-new-scan" class="btn btn-outline">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="1 4 1 10 7 10"></polyline>
+                  <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                </svg>
+                <span data-i18n="btnNewScan">Scan Another Leaf</span>
+              </button>
+            </div>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN 6: Disease Information and Advisory
+               ========================================================== -->
+          <section id="screen-advisory" class="app-screen">
+            <!-- Top Disease Banner -->
+            <div class="card" style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                <div>
+                  <span id="advisory-crop-badge" class="crop-chip" style="margin-bottom: 4px; display: inline-block;">Rice Paddy</span>
+                  <h2 id="advisory-disease-name" style="font-size: 22px; font-weight: 800;">Bacterial Leaf Blight</h2>
+                  <div id="advisory-sci-name" style="font-size: 13px; font-style: italic; color: var(--color-text-muted);">Xanthomonas oryzae</div>
+                </div>
+                <span id="advisory-severity-badge" class="badge badge-high">High Priority</span>
+              </div>
+            </div>
+
+            <!-- Voice Reading / Audio Player Bar -->
+            <div class="audio-advisory-bar">
+              <div class="audio-info-wrap">
+                <button id="btn-audio-toggle" class="audio-play-btn" title="Listen via Voice">
+                  <span id="audio-btn-icon">🔊</span>
+                </button>
+                <div>
+                  <div class="audio-label" id="audio-status-label" data-i18n="listenVoice">Listen to Advisory (Voice)</div>
+                  <div class="audio-sub" id="audio-speed-label">Speech Rate: Normal • Indian Accent</div>
+                </div>
+              </div>
+              <div class="audio-waves-container" id="audio-waves" style="display: none;">
+                <div class="audio-wave-bar"></div>
+                <div class="audio-wave-bar"></div>
+                <div class="audio-wave-bar"></div>
+                <div class="audio-wave-bar"></div>
+              </div>
+            </div>
+
+            <!-- Section 1: Overview & Visible Signs -->
+            <div class="advisory-block">
+              <h3 class="advisory-block-title" data-i18n="overviewSection">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                Disease Overview
+              </h3>
+              <p id="advisory-overview-text" style="font-size: 13.5px; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 12px;">
+                <!-- Injected by app.js -->
+              </p>
+
+              <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--color-text-main);">Visible Signs on Leaf:</h4>
+              <p id="advisory-signs-text" style="font-size: 13px; color: var(--color-text-muted); line-height: 1.45;">
+                <!-- Injected by app.js -->
+              </p>
+            </div>
+
+            <!-- Section 2: Symptoms -->
+            <div class="advisory-block">
+              <h3 class="advisory-block-title" data-i18n="symptomsSection">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                Detailed Symptoms
+              </h3>
+              <ul id="advisory-symptoms-list" class="instructions-list">
+                <!-- Injected by app.js -->
+              </ul>
+            </div>
+
+            <!-- Section 3: Causes & Favourable Conditions -->
+            <div class="advisory-block">
+              <h3 class="advisory-block-title" data-i18n="causesSection">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+                </svg>
+                Causes & Environmental Triggers
+              </h3>
+              <p id="advisory-causes-text" style="font-size: 13.5px; color: var(--color-text-muted); line-height: 1.45;">
+                <!-- Injected by app.js -->
+              </p>
+            </div>
+
+            <!-- Section 4: Recommended Treatment (Organic & Chemical) -->
+            <div class="advisory-block">
+              <h3 class="advisory-block-title" data-i18n="treatmentSection">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                Recommended Treatment
+              </h3>
+
+              <!-- Organic Remedies -->
+              <div class="treatment-sub-card">
+                <div class="treatment-sub-title">
+                  <span>🌿</span> <span data-i18n="organicTreatment">Organic & Bio-Control Remedies</span>
+                </div>
+                <ul id="advisory-organic-list" class="treatment-list">
+                  <!-- Injected by app.js -->
+                </ul>
+              </div>
+
+              <!-- Chemical Treatments with exact farmer-friendly dosages -->
+              <div class="treatment-sub-card chemical">
+                <div class="treatment-sub-title" style="color: var(--color-secondary-dark);">
+                  <span>🧪</span> <span data-i18n="chemicalTreatment">Chemical Treatments (Safe Dosages)</span>
+                </div>
+                <ul id="advisory-chemical-list" class="treatment-list">
+                  <!-- Injected by app.js -->
+                </ul>
+              </div>
+            </div>
+
+            <!-- Section 5: Prevention Methods -->
+            <div class="advisory-block">
+              <h3 class="advisory-block-title" data-i18n="preventionSection">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                Prevention & Best Farming Practices
+              </h3>
+              <ul id="advisory-prevention-list" class="instructions-list">
+                <!-- Injected by app.js -->
+              </ul>
+            </div>
+
+            <!-- Official Warning Notice -->
+            <div class="expert-warning-card">
+              <div class="expert-warning-icon">⚠️</div>
+              <div class="expert-warning-text">
+                <h4 data-i18n="expertWarningHeading">Agricultural Extension Warning</h4>
+                <p id="advisory-warning-text">
+                  Always wear protective gloves and mask when spraying fungicides. Consult your local Krishi Vigyan Kendra (KVK) or Block Agriculture Officer before chemical application.
+                </p>
+              </div>
+            </div>
+
+            <!-- Bottom Action: Scan another leaf or go home -->
+            <button id="btn-advisory-scan-again" class="btn btn-primary" style="margin-bottom: 24px;">
+              <span data-i18n="btnNewScan">Scan Another Leaf</span>
+            </button>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN 7: Language Settings
+               ========================================================== -->
+          <section id="screen-languages" class="app-screen">
+            <div style="margin-bottom: 18px;">
+              <h2 style="font-size: 22px; font-weight: 800;" data-i18n="languageSection">Language / भाषा</h2>
+              <p style="font-size: 13.5px; color: var(--color-text-muted);">Choose your preferred regional language</p>
+            </div>
+
+            <div id="language-list-container" class="lang-list">
+              <!-- Dynamically populated from SUPPORTED_LANGUAGES -->
+            </div>
+
+            <button id="btn-apply-language" class="btn btn-primary">
+              <span>Save Language</span>
+            </button>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN 8: History
+               ========================================================== -->
+          <section id="screen-history" class="app-screen">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+              <div>
+                <h2 style="font-size: 22px; font-weight: 800;" data-i18n="historyHeading">Diagnosis Records</h2>
+                <p style="font-size: 13px; color: var(--color-text-muted);" data-i18n="historySub">Saved offline on your device</p>
+              </div>
+              <button id="btn-clear-history-records" class="btn btn-sm btn-outline" style="font-size: 11.5px;">
+                <span data-i18n="btnClearHistory">Clear All</span>
+              </button>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="history-filter-bar">
+              <button class="history-filter-chip active" data-filter="all" data-i18n="filterAll">All Crops</button>
+              <button class="history-filter-chip" data-filter="rice" data-i18n="filterRice">Rice Only</button>
+              <button class="history-filter-chip" data-filter="wheat" data-i18n="filterWheat">Wheat Only</button>
+            </div>
+
+            <!-- History List Container -->
+            <div id="history-full-list" class="history-cards-container">
+              <!-- Populated by app.js -->
+            </div>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN 9: Settings
+               ========================================================== -->
+          <section id="screen-settings" class="app-screen">
+            <div style="margin-bottom: 20px;">
+              <h2 style="font-size: 22px; font-weight: 800;" data-i18n="settingsHeading">App Settings</h2>
+              <p style="font-size: 13px; color: var(--color-text-muted);">Configure language, voice, and offline options</p>
+            </div>
+
+            <!-- Settings Group 1: General Preferences -->
+            <div class="settings-group">
+              <div class="settings-group-title">Preferences</div>
+
+              <div class="settings-item card-clickable" id="setting-item-lang">
+                <div class="settings-item-info">
+                  <h4 data-i18n="languageSection">Language / भाषा</h4>
+                  <p id="settings-current-lang-name">English</p>
+                </div>
+                <span style="color: var(--color-primary); font-weight: bold;">Change →</span>
+              </div>
+
+              <div class="settings-item">
+                <div class="settings-item-info">
+                  <h4 data-i18n="voiceToggleLabel">Voice Advisory Reading</h4>
+                  <p>Read out treatment advice aloud</p>
+                </div>
+                <label class="switch-control">
+                  <input type="checkbox" id="switch-voice" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="settings-item">
+                <div class="settings-item-info">
+                  <h4 data-i18n="voiceSpeedLabel">Speech Rate</h4>
+                  <p>Audio playback speed</p>
+                </div>
+                <select id="select-voice-speed" class="form-select" style="width: auto; padding: 6px 10px;">
+                  <option value="1.0">Normal (1.0x)</option>
+                  <option value="0.85">Slow (Easy to follow)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Settings Group 2: Offline & ML Engine -->
+            <div class="settings-group">
+              <div class="settings-group-title">Offline & Machine Learning Engine</div>
+
+              <div class="settings-item">
+                <div class="settings-item-info">
+                  <h4>Offline Database</h4>
+                  <p data-i18n="offlineStatusText">9 diseases cached locally (100% offline)</p>
+                </div>
+                <span class="badge badge-healthy">Cached</span>
+              </div>
+
+              <div class="settings-item card-clickable" id="setting-item-ml">
+                <div class="settings-item-info">
+                  <h4 data-i18n="mlBackendSection">Machine Learning Backend Hook</h4>
+                  <p id="settings-ml-endpoint-status">Status: Standalone Offline Engine Active</p>
+                </div>
+                <span style="font-size: 12px; color: var(--color-primary); font-weight: 600;">Configure</span>
+              </div>
+            </div>
+
+            <!-- Settings Group 3: Support Helpline & About -->
+            <div class="settings-group">
+              <div class="settings-group-title">Support & About</div>
+
+              <div class="helpline-box">
+                <div style="font-size: 12px; font-weight: 700; color: var(--color-primary-dark); text-transform: uppercase;">
+                  Kisan Call Center (Govt. of India)
+                </div>
+                <div class="helpline-phone">1800-180-1551</div>
+                <p style="font-size: 12px; color: var(--color-text-muted); margin-bottom: 12px;">
+                  Toll-Free Farmer Support from 6:00 AM to 10:00 PM (All Indian Languages)
+                </p>
+                <a href="tel:18001801551" class="btn btn-primary btn-sm" style="width: auto; text-decoration: none;">
+                  <span>📞 Call Toll-Free Helpline</span>
+                </a>
+              </div>
+
+              <div class="settings-item" style="margin-top: 14px;">
+                <div class="settings-item-info">
+                  <h4 data-i18n="aboutSection">RootCause System</h4>
+                  <p data-i18n="appVersion">Version: 1.0.0 (BMS Hacks)</p>
+                  <p style="font-size: 11px; color: var(--color-text-subtle); margin-top: 4px;">
+                    Built with original RootCause design system. Offline-first architecture.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+
+          <!-- ==========================================================
+               SCREEN: Crop Disease Guide Catalog
+               ========================================================== -->
+          <section id="screen-guides" class="app-screen">
+            <div style="margin-bottom: 16px;">
+              <h2 style="font-size: 22px; font-weight: 800;">Disease Knowledge Guides</h2>
+              <p style="font-size: 13px; color: var(--color-text-muted);">Comprehensive offline pathology profiles for Rice and Wheat</p>
+            </div>
+
+            <div class="history-filter-bar">
+              <button class="history-filter-chip active" id="guide-filter-all" data-guide-filter="all">All (9)</button>
+              <button class="history-filter-chip" id="guide-filter-rice" data-guide-filter="rice">Rice Paddy (5)</button>
+              <button class="history-filter-chip" id="guide-filter-wheat" data-guide-filter="wheat">Wheat (4)</button>
+            </div>
+
+            <div id="guides-list-container" class="recent-history-list">
+              <!-- Dynamically rendered -->
+            </div>
+          </section>
+
+        </main>
+
+        <!-- Android Bottom Navigation Bar -->
+        <nav class="android-bottom-nav">
+          <button class="nav-tab-item active" data-nav="screen-dashboard">
+            <div class="nav-tab-pill">
+              <svg viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              </svg>
+            </div>
+            <span class="nav-tab-label" data-i18n="navHome">Home</span>
+          </button>
+
+          <button class="nav-tab-item" data-nav="screen-crop-select">
+            <div class="nav-tab-pill">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              </svg>
+            </div>
+            <span class="nav-tab-label" data-i18n="navDiagnose">Diagnose</span>
+          </button>
+
+          <button class="nav-tab-item" data-nav="screen-guides">
+            <div class="nav-tab-pill">
+              <svg viewBox="0 0 24 24">
+                <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
+              </svg>
+            </div>
+            <span class="nav-tab-label" data-i18n="navGuides">Guides</span>
+          </button>
+
+          <button class="nav-tab-item" data-nav="screen-history">
+            <div class="nav-tab-pill">
+              <svg viewBox="0 0 24 24">
+                <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+              </svg>
+            </div>
+            <span class="nav-tab-label" data-i18n="navHistory">History</span>
+          </button>
+
+          <button class="nav-tab-item" data-nav="screen-settings">
+            <div class="nav-tab-pill">
+              <svg viewBox="0 0 24 24">
+                <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+              </svg>
+            </div>
+            <span class="nav-tab-label" data-i18n="navSettings">Settings</span>
+          </button>
+        </nav>
+
+        <!-- Android Gesture Bar -->
+        <div class="android-gesture-pill"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ==========================================================
+       MODAL 1: Jotform "Ask a Farming Question" Modal
+       Faithfully implements all fields from Jotform 263172078776063
+       ========================================================== -->
+  <div id="modal-jotform" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title-row">
+        <h3 class="modal-title">Ask a Farming Question</h3>
+        <button id="btn-close-jotform-modal" class="modal-close-btn">✕</button>
+      </div>
+
+      <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: 16px;">
+        Submit your field query and crop image directly to agricultural extension officers.
+      </p>
+
+      <form id="jotform-query-form">
+        <!-- Farmer Name (First, Last) -->
+        <div class="form-group">
+          <label class="form-label">Farmer Name *</label>
+          <div class="form-row-2">
+            <input type="text" id="jf-firstname" class="form-input" placeholder="First Name" required>
+            <input type="text" id="jf-lastname" class="form-input" placeholder="Last Name" required>
+          </div>
+        </div>
+
+        <!-- Email / Contact -->
+        <div class="form-group">
+          <label class="form-label">Email / Phone *</label>
+          <input type="text" id="jf-email" class="form-input" placeholder="example@example.com or mobile" required>
+        </div>
+
+        <!-- Crop -->
+        <div class="form-group">
+          <label class="form-label">Crop *</label>
+          <select id="jf-crop" class="form-select">
+            <option value="Rice (Paddy)">Rice (Paddy - धान)</option>
+            <option value="Wheat">Wheat (गेहूं)</option>
+            <option value="Other">Other Field Crop</option>
+          </select>
+        </div>
+
+        <!-- Region -->
+        <div class="form-group">
+          <label class="form-label">Region / State / District *</label>
+          <input type="text" id="jf-region" class="form-input" placeholder="e.g. Haryana, Punjab, Karnataka" required>
+        </div>
+
+        <!-- Question / Observations -->
+        <div class="form-group">
+          <label class="form-label">Question / Disease Description *</label>
+          <textarea id="jf-question" class="form-textarea" rows="3" placeholder="Describe the symptoms you see on the leaf..." required></textarea>
+        </div>
+
+        <!-- Image Upload preview -->
+        <div class="form-group">
+          <label class="form-label">Attached Leaf Photo</label>
+          <div id="jf-image-preview-box" style="width: 100%; height: 120px; border-radius: var(--radius-md); background: #0f172a; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+            <img id="jf-preview-img" src="assets/images/sample_leaf_rice.svg" alt="Form photo" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">
+          <span>Submit Farming Question</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- ==========================================================
+       MODAL 2: ML Backend Configuration Modal
+       ========================================================== -->
+  <div id="modal-ml-config" class="modal-overlay">
+    <div class="modal-bottom-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title-row">
+        <h3 class="modal-title">ML Backend Hook</h3>
+        <button id="btn-close-ml-modal" class="modal-close-btn">✕</button>
+      </div>
+
+      <p style="font-size: 13px; color: var(--color-text-muted); line-height: 1.4; margin-bottom: 16px;">
+        RootCause works completely offline using built-in rule engines. If you run a custom ML model backend (e.g., PyTorch / TensorFlow REST API), configure the endpoint URL below.
+      </p>
+
+      <div class="form-group">
+        <label class="form-label">Prediction API URL (POST /diagnose)</label>
+        <input type="url" id="input-ml-endpoint" class="form-input" placeholder="http://192.168.1.5:5000/api/diagnose">
+        <span style="font-size: 11px; color: var(--color-text-subtle); margin-top: 4px; display: block;">
+          Leave empty to use built-in offline engine.
+        </span>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 18px;">
+        <button id="btn-save-ml-config" class="btn btn-primary" style="flex: 1;">Save Configuration</button>
+        <button id="btn-reset-ml-config" class="btn btn-outline btn-sm" style="flex: 1;">Reset to Offline</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Service Worker Registration & Main Controller -->
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
