@@ -1,0 +1,112 @@
+{
+  "experiment": "finetune_last20_smoothing",
+  "description": "Same 20-layer fine-tune with 0.05 label smoothing",
+  "validation_samples": 769,
+  "validation_accuracy": 0.8803641092327699,
+  "validation_macro_f1": 0.8470046047078645,
+  "validation_weighted_f1": 0.8837975798549986,
+  "validation_predicted_counts": {
+    "Black Rust": 80,
+    "Brown Rust": 252,
+    "Yellow Rust": 230,
+    "Powdery Mildew": 207
+  },
+  "class_weights": {
+    "Black Rust": 3.284188034188034,
+    "Brown Rust": 0.8228051391862955,
+    "Yellow Rust": 0.7382324687800192,
+    "Powdery Mildew": 0.8884393063583815
+  },
+  "batch_size": 16,
+  "warmup_epochs": 2,
+  "fine_tune_max_epochs": 4,
+  "fine_tune_eligible_layers": 20,
+  "label_smoothing": 0.05,
+  "augmentation": {
+    "horizontal_flip": true,
+    "rotation": 0.08,
+    "zoom": 0.1,
+    "contrast": 0.08,
+    "training_only": true
+  },
+  "dropout": 0.35,
+  "seed": 42,
+  "training_seconds": 746.9033202999854,
+  "model_bytes": 22534360,
+  "class_to_index": {
+    "Black Rust": 0,
+    "Brown Rust": 1,
+    "Yellow Rust": 2,
+    "Powdery Mildew": 3
+  },
+  "validation_classification_report": {
+    "Black Rust": {
+      "precision": 0.6,
+      "recall": 0.8135593220338984,
+      "f1-score": 0.6906474820143884,
+      "support": 59,
+      "predicted": 80
+    },
+    "Brown Rust": {
+      "precision": 0.8492063492063492,
+      "recall": 0.9145299145299145,
+      "f1-score": 0.8806584362139918,
+      "support": 234,
+      "predicted": 252
+    },
+    "Yellow Rust": {
+      "precision": 0.9782608695652174,
+      "recall": 0.8653846153846154,
+      "f1-score": 0.9183673469387755,
+      "support": 260,
+      "predicted": 230
+    },
+    "Powdery Mildew": {
+      "precision": 0.9178743961352657,
+      "recall": 0.8796296296296297,
+      "f1-score": 0.8983451536643026,
+      "support": 216,
+      "predicted": 207
+    },
+    "accuracy": 0.8803641092327699,
+    "macro avg": {
+      "precision": 0.8363354037267081,
+      "recall": 0.8682758703945145,
+      "f1-score": 0.8470046047078645,
+      "support": 769
+    },
+    "weighted avg": {
+      "precision": 0.8930077781098305,
+      "recall": 0.8803641092327699,
+      "f1-score": 0.8837975798549986,
+      "support": 769
+    }
+  },
+  "validation_confusion_matrix": [
+    [
+      48,
+      7,
+      1,
+      3
+    ],
+    [
+      14,
+      214,
+      1,
+      5
+    ],
+    [
+      8,
+      18,
+      225,
+      9
+    ],
+    [
+      10,
+      13,
+      3,
+      190
+    ]
+  ],
+  "model_path": "C:\\Semister 3 notes\\Hackathon\\BMS_Hacks\\BMS_Hacks\\app\\models\\wheat_accuracy_experiments\\finetune_last20_smoothing\\wheat_finetune_last20_smoothing.keras"
+}

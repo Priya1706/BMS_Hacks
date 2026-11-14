@@ -1,0 +1,43 @@
+{
+  "Black Rust": {
+    "precision": 0.6,
+    "recall": 0.8135593220338984,
+    "f1-score": 0.6906474820143884,
+    "support": 59,
+    "predicted": 80
+  },
+  "Brown Rust": {
+    "precision": 0.8492063492063492,
+    "recall": 0.9145299145299145,
+    "f1-score": 0.8806584362139918,
+    "support": 234,
+    "predicted": 252
+  },
+  "Yellow Rust": {
+    "precision": 0.9782608695652174,
+    "recall": 0.8653846153846154,
+    "f1-score": 0.9183673469387755,
+    "support": 260,
+    "predicted": 230
+  },
+  "Powdery Mildew": {
+    "precision": 0.9178743961352657,
+    "recall": 0.8796296296296297,
+    "f1-score": 0.8983451536643026,
+    "support": 216,
+    "predicted": 207
+  },
+  "accuracy": 0.8803641092327699,
+  "macro avg": {
+    "precision": 0.8363354037267081,
+    "recall": 0.8682758703945145,
+    "f1-score": 0.8470046047078645,
+    "support": 769
+  },
+  "weighted avg": {
+    "precision": 0.8930077781098305,
+    "recall": 0.8803641092327699,
+    "f1-score": 0.8837975798549986,
+    "support": 769
+  }
+}

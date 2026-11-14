@@ -1,0 +1,8 @@
+{
+  "selection_metric": "validation macro F1; validation accuracy is tie-breaker",
+  "selected_experiment": "label_smoothing_ft30",
+  "selected_model_path": "C:\\Semister 3 notes\\Hackathon\\BMS_Hacks\\BMS_Hacks\\app\\models\\rice_accuracy_experiments\\label_smoothing_ft30\\rice_5class_label_smoothing_ft30.keras",
+  "all_variants_tested_on_validation_only": true,
+  "selected_validation_macro_f1": 0.75094726062468,
+  "selection_locked_before_test_evaluation": true
+}

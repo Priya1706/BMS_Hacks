@@ -1,0 +1,126 @@
+{
+  "experiment": "label_smoothing_ft30",
+  "description": "Same as augmented_ft30 with 0.05 label smoothing",
+  "split": "reproducible stratified 80/20 split of source train+validation only",
+  "validation_samples": 131,
+  "validation_accuracy": 0.7862595419847328,
+  "validation_macro_f1": 0.75094726062468,
+  "validation_weighted_f1": 0.7873891409966268,
+  "validation_class_prediction_counts": {
+    "Bacterial Leaf Blight": 13,
+    "Brown Spot": 25,
+    "Healthy Rice Leaf": 32,
+    "Leaf scald": 16,
+    "Sheath Blight": 45
+  },
+  "class_weights": {
+    "Bacterial Leaf Blight": 1.5382352941176471,
+    "Brown Spot": 1.1127659574468085,
+    "Healthy Rice Leaf": 0.8573770491803279,
+    "Leaf scald": 2.1346938775510202,
+    "Sheath Blight": 0.5505263157894736
+  },
+  "seed": 42,
+  "batch_size": 16,
+  "warmup_epochs_requested": 2,
+  "fine_tune_epochs_max": 6,
+  "fine_tune_eligible_layers": 30,
+  "label_smoothing": 0.05,
+  "augmentation": {
+    "rotation": 0.08,
+    "zoom": 0.1,
+    "contrast": 0.08
+  },
+  "dropout": 0.35,
+  "training_seconds": 156.37385989999166,
+  "model_bytes": 23519889,
+  "class_to_index": {
+    "Bacterial Leaf Blight": 0,
+    "Brown Spot": 1,
+    "Healthy Rice Leaf": 2,
+    "Leaf scald": 3,
+    "Sheath Blight": 4
+  },
+  "val_classification_report": {
+    "Bacterial Leaf Blight": {
+      "precision": 0.7692307692307693,
+      "recall": 0.5882352941176471,
+      "f1-score": 0.6666666666666667,
+      "support": 17
+    },
+    "Brown Spot": {
+      "precision": 0.64,
+      "recall": 0.6956521739130435,
+      "f1-score": 0.6666666666666666,
+      "support": 23
+    },
+    "Healthy Rice Leaf": {
+      "precision": 0.8125,
+      "recall": 0.8387096774193549,
+      "f1-score": 0.8253968253968254,
+      "support": 31
+    },
+    "Leaf scald": {
+      "precision": 0.625,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.7142857142857143,
+      "support": 12
+    },
+    "Sheath Blight": {
+      "precision": 0.9111111111111111,
+      "recall": 0.8541666666666666,
+      "f1-score": 0.8817204301075269,
+      "support": 48
+    },
+    "accuracy": 0.7862595419847328,
+    "macro avg": {
+      "precision": 0.751568376068376,
+      "recall": 0.7620194290900091,
+      "f1-score": 0.75094726062468,
+      "support": 131
+    },
+    "weighted avg": {
+      "precision": 0.7955553924447054,
+      "recall": 0.7862595419847328,
+      "f1-score": 0.7873891409966268,
+      "support": 131
+    }
+  },
+  "val_confusion_matrix": [
+    [
+      10,
+      4,
+      1,
+      0,
+      2
+    ],
+    [
+      2,
+      16,
+      2,
+      2,
+      1
+    ],
+    [
+      0,
+      2,
+      26,
+      2,
+      1
+    ],
+    [
+      1,
+      0,
+      1,
+      10,
+      0
+    ],
+    [
+      0,
+      3,
+      2,
+      2,
+      41
+    ]
+  ]
+}

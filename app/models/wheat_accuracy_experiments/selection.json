@@ -1,0 +1,7 @@
+{
+  "selected_experiment": "finetune_last20_smoothing",
+  "selected_model_path": "C:\\Semister 3 notes\\Hackathon\\BMS_Hacks\\BMS_Hacks\\app\\models\\wheat_accuracy_experiments\\finetune_last20_smoothing\\wheat_finetune_last20_smoothing.keras",
+  "selection_rule": "highest validation macro F1; validation accuracy as tie-breaker",
+  "fixed_test_used_for_selection": false,
+  "locked_before_selected_candidate_test_evaluation": true
+}

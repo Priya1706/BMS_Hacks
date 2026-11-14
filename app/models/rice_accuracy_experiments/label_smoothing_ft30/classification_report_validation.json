@@ -1,0 +1,45 @@
+{
+  "Bacterial Leaf Blight": {
+    "precision": 0.7692307692307693,
+    "recall": 0.5882352941176471,
+    "f1-score": 0.6666666666666667,
+    "support": 17
+  },
+  "Brown Spot": {
+    "precision": 0.64,
+    "recall": 0.6956521739130435,
+    "f1-score": 0.6666666666666666,
+    "support": 23
+  },
+  "Healthy Rice Leaf": {
+    "precision": 0.8125,
+    "recall": 0.8387096774193549,
+    "f1-score": 0.8253968253968254,
+    "support": 31
+  },
+  "Leaf scald": {
+    "precision": 0.625,
+    "recall": 0.8333333333333334,
+    "f1-score": 0.7142857142857143,
+    "support": 12
+  },
+  "Sheath Blight": {
+    "precision": 0.9111111111111111,
+    "recall": 0.8541666666666666,
+    "f1-score": 0.8817204301075269,
+    "support": 48
+  },
+  "accuracy": 0.7862595419847328,
+  "macro avg": {
+    "precision": 0.751568376068376,
+    "recall": 0.7620194290900091,
+    "f1-score": 0.75094726062468,
+    "support": 131
+  },
+  "weighted avg": {
+    "precision": 0.7955553924447054,
+    "recall": 0.7862595419847328,
+    "f1-score": 0.7873891409966268,
+    "support": 131
+  }
+}

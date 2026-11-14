@@ -1,0 +1,20 @@
+{
+  "folder_to_label": {
+    "Black Rust": "Black Rust",
+    "Brown Rust": "Brown Rust",
+    "Yellow Rust": "Yellow Rust",
+    "Mildew": "Powdery Mildew"
+  },
+  "test_folder_to_label": {
+    "black_rust_test": "Black Rust",
+    "brown_rust_test": "Brown Rust",
+    "yellow_rust_test": "Yellow Rust",
+    "mildew_test": "Powdery Mildew"
+  },
+  "class_to_index": {
+    "Black Rust": 0,
+    "Brown Rust": 1,
+    "Yellow Rust": 2,
+    "Powdery Mildew": 3
+  }
+}

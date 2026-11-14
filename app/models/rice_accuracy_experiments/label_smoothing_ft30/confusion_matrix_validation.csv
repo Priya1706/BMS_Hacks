@@ -1,0 +1,6 @@
+true\predicted,Bacterial Leaf Blight,Brown Spot,Healthy Rice Leaf,Leaf scald,Sheath Blight
+Bacterial Leaf Blight,10,4,1,0,2
+Brown Spot,2,16,2,2,1
+Healthy Rice Leaf,0,2,26,2,1
+Leaf scald,1,0,1,10,0
+Sheath Blight,0,3,2,2,41

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="350" viewBox="0 0 760 350">
+<style>text{font:12px Arial,sans-serif;fill:#14212b}.title{font-size:16px;font-weight:bold}</style>
+<rect width="100%" height="100%" fill="white"/>
+<text x="16" y="23" class="title">Training/validation loss (6 epochs)</text>
+<line x1="65" y1="38.0" x2="715" y2="38.0" stroke="#d9e0e6"/>
+<text x="57" y="42.0" text-anchor="end">1.13</text>
+<line x1="65" y1="89.0" x2="715" y2="89.0" stroke="#d9e0e6"/>
+<text x="57" y="93.0" text-anchor="end">1.00</text>
+<line x1="65" y1="140.0" x2="715" y2="140.0" stroke="#d9e0e6"/>
+<text x="57" y="144.0" text-anchor="end">0.87</text>
+<line x1="65" y1="191.0" x2="715" y2="191.0" stroke="#d9e0e6"/>
+<text x="57" y="195.0" text-anchor="end">0.74</text>
+<line x1="65" y1="242.0" x2="715" y2="242.0" stroke="#d9e0e6"/>
+<text x="57" y="246.0" text-anchor="end">0.61</text>
+<line x1="65" y1="293.0" x2="715" y2="293.0" stroke="#d9e0e6"/>
+<text x="57" y="297.0" text-anchor="end">0.49</text>
+<polyline fill="none" stroke="#1677b8" stroke-width="2.5" points="65.0,38.0 195.0,169.5 325.0,216.4 455.0,248.6 585.0,273.0 715.0,286.4"/>
+<text x="75" y="336" fill="#1677b8">train loss</text>
+<polyline fill="none" stroke="#ed7d31" stroke-width="2.5" points="65.0,184.5 195.0,243.3 325.0,235.8 455.0,267.8 585.0,279.6 715.0,293.0"/>
+<text x="255" y="336" fill="#ed7d31">validation loss</text>
+</svg>

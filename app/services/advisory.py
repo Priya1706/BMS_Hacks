@@ -299,6 +299,35 @@ WHEAT_DISEASES: Dict[str, Dict[str, Any]] = {
         "monitoring_advice": "Scout weekly until harvest.",
         "disclaimer": DISCLAIMER_TEXT,
     },
+    "black_rust": {
+        "disease_id": "black_rust",
+        "disease_name": "Wheat Stem Rust (Black Rust)",
+        "scientific_name": "Puccinia graminis f. sp. tritici",
+        "crop_type": "wheat",
+        "is_placeholder": True,
+        "severity_level": "Very High",
+        "symptoms": [
+            "Elongated reddish-brown to black pustules on stems, leaf sheaths, and glumes.",
+            "The outer stem tissue tears around the pustules, leaving ragged edges.",
+            "Late pustules darken as black teliospores form, and weakened stems may lodge.",
+        ],
+        "preventive_measures": [
+            "Grow stem-rust resistant varieties recommended for your wheat zone.",
+            "Remove volunteer wheat and nearby alternate hosts such as barberry.",
+            "Avoid very late sowing in warmer central and southern zones.",
+        ],
+        "organic_controls": [
+            "Maintain field sanitation and crop rotation to reduce local inoculum.",
+            "Use bio-fungicide formulations only when approved by the local extension service.",
+        ],
+        "chemical_guidance": (
+            "NOTICE: Stem rust can spread quickly in warm, dewy weather. "
+            "Consult your local Krishi Vigyan Kendra or extension agronomist before any spray. "
+            "No dosage is provided here."
+        ),
+        "monitoring_advice": "Inspect stems and sheaths twice a week once temperatures rise above 20°C.",
+        "disclaimer": DISCLAIMER_TEXT,
+    },
 }
 
 ALL_DISEASES = {
@@ -339,9 +368,9 @@ def get_disease_advisory(crop_type: str, disease_id: Optional[str] = None) -> Di
         # Display labels returned by the wheat classifier use field names,
         # while existing advisory records use conventional disease IDs.
         clean_id = {
-            "black_rust": "leaf_rust",
             "brown_rust": "leaf_rust",
             "yellow_rust": "stripe_rust",
+            "stem_rust": "black_rust",
         }.get(clean_id, clean_id)
         if clean_id in crop_dict:
             return crop_dict[clean_id].copy()
