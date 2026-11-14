@@ -3,7 +3,7 @@
  * Pre-caches UI assets, CSS, images, and disease datasets
  */
 
-const CACHE_NAME = 'rootcause-v1.0.0';
+const CACHE_NAME = 'rootcause-v1.1.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -52,6 +52,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
   // Offline-first cache strategy
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {

@@ -206,6 +206,43 @@ export const DISEASES_DATABASE = {
       expertWarning: 'Do not spray chemicals only over top foliage; the spray must reach the lower leaf sheaths near water level where the fungus starts.',
       sampleColor: '#b91c1c',
       badgeClass: 'badge-high'
+    },
+    {
+      id: 'rice_healthy',
+      name: 'Healthy Rice Leaf',
+      localName: 'स्वस्थ धान की पत्ती / ಆರೋಗ್ಯಕರ ಭತ್ತದ ಎಲೆ',
+      crop: 'rice',
+      cropDisplayName: 'Rice (धान)',
+      scientificName: 'Oryza sativa L.',
+      severity: 'Healthy',
+      season: 'All Seasons',
+      priority: 'Optimal Health',
+      summary: 'No visible disease detected. The leaf exhibits vibrant green chlorophyll pigmentation, smooth margins, and healthy cellular structure.',
+      symptoms: [
+        'Uniform green coloration across the entire leaf blade.',
+        'Absence of necrotic lesions, rust pustules, or water-soaked streaks.',
+        'Erect leaf architecture with robust midrib support.'
+      ],
+      visibleSigns: 'Vibrant, spotless green leaf tissue with clear longitudinal veins.',
+      causes: 'Balanced soil nutrient management, certified disease-free seed stock, and optimal water drainage.',
+      treatment: {
+        organic: [
+          'Continue regular application of organic compost and bio-fertilizers.',
+          'Spray diluted Panchagavya (3%) at 15-day intervals for growth promotion.'
+        ],
+        chemical: [
+          'No chemical fungicide intervention required.',
+          'Conserve beneficial predatory insects and natural field fauna.'
+        ]
+      },
+      prevention: [
+        'Maintain regular field scouting every 4-7 days.',
+        'Follow Leaf Color Chart (LCC) to avoid excess urea application.',
+        'Keep field irrigation channels clean.'
+      ],
+      expertWarning: 'Keep monitoring your crop regularly during tillering and panicle development stages.',
+      sampleColor: '#16a34a',
+      badgeClass: 'badge-healthy'
     }
   ],
   wheat: [
@@ -392,4 +429,37 @@ export function getDiseaseById(id) {
  */
 export function getDiseasesByCrop(crop) {
   return DISEASES_DATABASE[crop.toLowerCase()] || [];
+}
+
+/**
+ * Match model prediction name to catalog disease entry
+ */
+export function findDiseaseByPrediction(crop, predictionName) {
+  if (!predictionName) return null;
+  const list = getDiseasesByCrop(crop);
+  const norm = predictionName.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+  for (const item of list) {
+    const itemNorm = item.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const idNorm = item.id.toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (itemNorm.includes(norm) || norm.includes(itemNorm) || idNorm.includes(norm)) {
+      return item;
+    }
+  }
+
+  // Handle specific aliases
+  if (norm.includes('blackrust') || norm.includes('stemrust')) {
+    return list.find(d => d.id === 'wheat_stem_rust') || null;
+  }
+  if (norm.includes('yellowrust') || norm.includes('striperust')) {
+    return list.find(d => d.id === 'wheat_yellow_rust') || null;
+  }
+  if (norm.includes('brownrust') || norm.includes('leafrust')) {
+    return list.find(d => d.id === 'wheat_brown_rust') || null;
+  }
+  if (norm.includes('healthy')) {
+    return list.find(d => d.id === 'rice_healthy') || null;
+  }
+
+  return null;
 }

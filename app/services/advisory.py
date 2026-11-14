@@ -339,6 +339,7 @@ def get_disease_advisory(crop_type: str, disease_id: Optional[str] = None) -> Di
         # Display labels returned by the wheat classifier use field names,
         # while existing advisory records use conventional disease IDs.
         clean_id = {
+            "black_rust": "leaf_rust",
             "brown_rust": "leaf_rust",
             "yellow_rust": "stripe_rust",
         }.get(clean_id, clean_id)

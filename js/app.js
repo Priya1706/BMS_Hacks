@@ -1,4 +1,4 @@
-/**
+﻿/**
  * RootCause - Main Application Controller
  * Handles screen navigation, camera integration, offline classification,
  * multilingual dictionary rendering, audio advisory, and local persistence.
@@ -278,6 +278,13 @@ class RootCauseApp {
       this.navigateTo('screen-capture');
     });
 
+    document.getElementById('btn-quality-retake').addEventListener('click', () => {
+      this.navigateTo('screen-capture');
+    });
+    document.getElementById('btn-unavailable-retry').addEventListener('click', () => {
+      this.navigateTo('screen-capture');
+    });
+
     document.getElementById('btn-inconclusive-ask-expert').addEventListener('click', () => {
       this.openJotformModal();
     });
@@ -305,7 +312,6 @@ class RootCauseApp {
     const btnRetake = document.getElementById('btn-retake-photo');
     const btnRemove = document.getElementById('btn-remove-photo');
     const btnRun = document.getElementById('btn-run-diagnosis');
-    const btnInconclusive = document.getElementById('btn-test-inconclusive');
 
     // Tab: Camera Mode
     tabCamera.addEventListener('click', async () => {
@@ -376,13 +382,9 @@ class RootCauseApp {
 
     // Run Disease Detection
     btnRun.addEventListener('click', async () => {
-      await this.executeDiagnosis(false);
+      await this.executeDiagnosis();
     });
 
-    // Test Inconclusive Scenario
-    btnInconclusive.addEventListener('click', async () => {
-      await this.executeDiagnosis(true);
-    });
   }
 
   onEnterCaptureScreen() {
@@ -444,9 +446,9 @@ class RootCauseApp {
   }
 
   /**
-   * Run Disease Detection (Offline rule engine or ML backend hook)
+   * Run disease detection through the FastAPI backend
    */
-  async executeDiagnosis(forceInconclusive = false) {
+  async executeDiagnosis() {
     const btnRun = document.getElementById('btn-run-diagnosis');
     const originalText = btnRun.innerHTML;
     btnRun.disabled = true;
@@ -455,8 +457,7 @@ class RootCauseApp {
     try {
       const result = await ClassifierService.classifyLeaf({
         imageData: this.currentImageData || this.SAMPLE_IMAGES[this.currentCrop],
-        crop: this.currentCrop,
-        forceInconclusive: forceInconclusive
+        crop: this.currentCrop
       });
 
       // Attach optional field notes from the form
@@ -487,6 +488,32 @@ class RootCauseApp {
    * Render Screen 5: Disease Detection Results
    */
   renderResultsScreen(result) {
+    const hero = document.querySelector('#screen-results .results-card-hero');
+    const qualityBox = document.getElementById('results-quality-box');
+    const unavailableBox = document.getElementById('results-unavailable-box');
+    const inconclusiveBox = document.getElementById('results-inconclusive-box');
+    const btnAdvisory = document.getElementById('btn-results-view-advisory');
+    const confidenceBox = document.querySelector('.confidence-meter-box');
+    const actions = document.querySelector('#screen-results > div[style*="flex-direction: column"]');
+    qualityBox.style.display = result.isQualityFailed ? 'block' : 'none';
+    unavailableBox.style.display = result.isUnavailable ? 'block' : 'none';
+    unavailableBox.querySelector('#results-unavailable-message').textContent = result.message || 'Prediction service unavailable.';
+    if (result.isQualityFailed) {
+      const issueList = document.getElementById('results-quality-issues');
+      issueList.replaceChildren(...(result.issues || []).map(issue => {
+        const item = document.createElement('li');
+        item.textContent = issue;
+        return item;
+      }));
+      document.getElementById('results-quality-suggestions').textContent = (result.suggestions || []).join(' ');
+    }
+    hero.style.display = result.isUnavailable || result.isQualityFailed ? 'none' : '';
+    confidenceBox.style.display = result.isBackend && !result.isQualityFailed ? '' : 'none';
+    inconclusiveBox.style.display = 'none';
+    btnAdvisory.style.display = 'none';
+    if (actions) actions.style.display = result.isUnavailable || result.isQualityFailed ? 'none' : '';
+    if (result.isUnavailable || result.isQualityFailed) return;
+
     const leafImg = document.getElementById('results-leaf-img');
     const cropTag = document.getElementById('results-crop-tag');
     const diseaseName = document.getElementById('results-disease-name');
@@ -495,8 +522,6 @@ class RootCauseApp {
     const confBar = document.getElementById('results-conf-bar');
     const severityBadge = document.getElementById('results-severity-badge');
     const summaryText = document.getElementById('results-summary-text');
-    const inconclusiveBox = document.getElementById('results-inconclusive-box');
-    const btnAdvisory = document.getElementById('btn-results-view-advisory');
 
     leafImg.src = result.imageThumbnail || this.SAMPLE_IMAGES[result.crop];
     cropTag.textContent = result.cropDisplayName;
@@ -523,6 +548,10 @@ class RootCauseApp {
       severityBadge.className = `badge ${result.badgeClass || 'badge-high'}`;
       severityBadge.textContent = `${result.severity} Priority`;
       summaryText.textContent = result.basicSymptoms;
+
+      const sourcePill = document.getElementById('results-source-pill');
+      sourcePill.className = 'backend-source-pill live';
+      sourcePill.textContent = `🟢 ${result.backendSource || 'FastAPI model'}`;
 
       inconclusiveBox.style.display = 'none';
       btnAdvisory.style.display = 'flex';
@@ -872,6 +901,20 @@ class RootCauseApp {
       document.getElementById('modal-ml-config').classList.remove('open');
     });
 
+    document.getElementById('btn-test-ml-health').addEventListener('click', async () => {
+      const status = document.getElementById('ml-health-status');
+      const input = document.getElementById('input-ml-endpoint');
+      const savedEndpoint = this.userSettings.apiEndpoint;
+      StorageService.saveSettings({ apiEndpoint: input.value.trim() });
+      status.textContent = 'Checking prediction server…';
+      const health = await ClassifierService.checkBackendHealth();
+      StorageService.saveSettings({ apiEndpoint: savedEndpoint || '' });
+      this.userSettings = StorageService.getSettings();
+      status.textContent = health.online
+        ? `Connected (${health.latencyMs} ms)`
+        : `Could not connect to ${health.url}. Check the server URL and CORS settings.`;
+    });
+
     document.getElementById('btn-save-ml-config').addEventListener('click', () => {
       const val = document.getElementById('input-ml-endpoint').value.trim();
       StorageService.saveSettings({ apiEndpoint: val });
@@ -881,7 +924,7 @@ class RootCauseApp {
       if (val) {
         statusElem.textContent = `Custom Endpoint: ${val}`;
       } else {
-        statusElem.textContent = `Status: Standalone Offline Engine Active`;
+        statusElem.textContent = `Status: Offline guides available; prediction server not configured`;
       }
       document.getElementById('modal-ml-config').classList.remove('open');
       alert('Machine learning configuration updated successfully.');
@@ -891,7 +934,7 @@ class RootCauseApp {
       document.getElementById('input-ml-endpoint').value = '';
       StorageService.saveSettings({ apiEndpoint: '' });
       this.userSettings = StorageService.getSettings();
-      document.getElementById('settings-ml-endpoint-status').textContent = `Status: Standalone Offline Engine Active`;
+      document.getElementById('settings-ml-endpoint-status').textContent = `Status: Offline guides available; prediction server not configured`;
       document.getElementById('modal-ml-config').classList.remove('open');
     });
   }
@@ -960,7 +1003,7 @@ class RootCauseApp {
   async runQuickDemo() {
     this.currentCrop = 'rice';
     this.currentImageData = this.SAMPLE_IMAGES.rice;
-    await this.executeDiagnosis(false);
+    await this.executeDiagnosis();
   }
 
   /**
