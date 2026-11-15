@@ -17,9 +17,12 @@ import numpy as np
 from PIL import Image, UnidentifiedImageError
 
 # Default threshold configurations (optimized for mobile leaf photography)
-DEFAULT_MIN_WIDTH = 224
-DEFAULT_MIN_HEIGHT = 224
-DEFAULT_BLUR_THRESHOLD = 100.0  # Laplacian variance below this is considered blurry
+DEFAULT_MIN_WIDTH = 150
+DEFAULT_MIN_HEIGHT = 150
+# A 100-point cutoff rejected many clean held-out crop photos even though the
+# classifier resizes all inputs to 224x224. Keep the gate for near-uniform or
+# truly defocused captures, rather than natural low-texture leaves.
+DEFAULT_BLUR_THRESHOLD = 10.0
 DEFAULT_MIN_BRIGHTNESS = 45.0   # Mean grayscale intensity (0-255); below is underexposed
 DEFAULT_MAX_BRIGHTNESS = 215.0  # Mean grayscale intensity (0-255); above is overexposed
 
@@ -317,7 +320,11 @@ def assess_image_quality(
 
     # 3. Individual quality metric assessments
     resolution_res = check_resolution(width, height, min_width=min_width, min_height=min_height)
-    blur_res = check_blur(gray_np, blur_threshold=blur_threshold)
+    # The classifier sees a 224x224 resized image. Scoring sharpness at the
+    # original camera resolution made detailed high-resolution leaves appear
+    # blurry because fine lesion edges occupy only a few source pixels.
+    blur_input = cv2.resize(gray_np, (224, 224), interpolation=cv2.INTER_LINEAR)
+    blur_res = check_blur(blur_input, blur_threshold=blur_threshold)
     brightness_res = check_brightness(
         gray_np, min_brightness=min_brightness, max_brightness=max_brightness
     )
@@ -570,7 +577,10 @@ def assess_image_quality(
 
     # 3. Individual quality metric assessments
     resolution_res = check_resolution(width, height, min_width=min_width, min_height=min_height)
-    blur_res = check_blur(gray_np, blur_threshold=blur_threshold)
+    # Match the classifier's input scale so resolution alone does not change
+    # the meaning of the Laplacian threshold.
+    blur_input = cv2.resize(gray_np, (224, 224), interpolation=cv2.INTER_LINEAR)
+    blur_res = check_blur(blur_input, blur_threshold=blur_threshold)
     brightness_res = check_brightness(
         gray_np, min_brightness=min_brightness, max_brightness=max_brightness
     )

@@ -69,16 +69,29 @@ class TestPredictorService(unittest.TestCase):
         self.assertIsNone(result["prediction"])
         self.assertIsNone(result["confidence"])
         self.assertFalse(result["is_model_loaded"])
-        self.assertIn("rice_mobilenet_candidate.keras", result["message"])
+        self.assertIn("rice_accuracy_experiments", result["message"])
         self.assertIn("model_info", result)
 
-    def test_wheat_candidate_inference(self):
-        """The promoted wheat candidate returns one of its mapped disease classes."""
+    def test_wheat_selected_model_inference(self):
+        """The selected wheat model returns a label from the canonical output order."""
         result = predict_crop_disease("wheat", self.test_bytes)
         self.assertEqual(result["status"], "success")
         self.assertEqual(result["crop_type"], "wheat")
         self.assertIn(result["prediction"], CROP_CLASS_LABELS["wheat"])
         self.assertEqual(len(result["raw_scores"]), 4)
+
+    def test_selected_class_mappings_and_paths(self):
+        self.assertEqual(CROP_CLASS_LABELS["rice"], [
+            "Bacterial Leaf Blight", "Brown Spot", "Healthy Rice Leaf",
+            "Leaf scald", "Sheath Blight",
+        ])
+        self.assertEqual(CROP_CLASS_LABELS["wheat"], [
+            "Black Rust", "Brown Rust", "Yellow Rust", "Powdery Mildew",
+        ])
+        self.assertTrue(get_model_path("rice").as_posix().endswith(
+            "rice_accuracy_experiments/label_smoothing_ft30/rice_5class_label_smoothing_ft30.keras"))
+        self.assertTrue(get_model_path("wheat").as_posix().endswith(
+            "wheat_accuracy_experiments/finetune_last20_smoothing/wheat_finetune_last20_smoothing.keras"))
 
     def test_unsupported_crop_type(self):
         """Unsupported crop type should return an error dict with supported list."""
@@ -102,10 +115,12 @@ class TestPredictorService(unittest.TestCase):
         self.assertIn("wheat", status["crops"])
         self.assertTrue(status["crops"]["rice"]["available"])
         self.assertTrue(status["crops"]["wheat"]["available"])
-        self.assertEqual(Path(status["crops"]["rice"]["path"]).name,
-                         "rice_mobilenet_candidate.keras")
-        self.assertEqual(Path(status["crops"]["wheat"]["path"]).name,
-                         "wheat_mobilenet_candidate.keras")
+        self.assertEqual(status["crops"]["rice"]["output_classes"], 5)
+        self.assertEqual(status["crops"]["wheat"]["output_classes"], 4)
+        self.assertTrue(Path(status["crops"]["rice"]["path"]).as_posix().endswith(
+            "rice_5class_label_smoothing_ft30.keras"))
+        self.assertTrue(Path(status["crops"]["wheat"]["path"]).as_posix().endswith(
+            "wheat_finetune_last20_smoothing.keras"))
 
     def test_is_model_available(self):
         """Promoted rice and wheat candidates exist."""

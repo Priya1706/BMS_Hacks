@@ -46,8 +46,11 @@ class TestRiceMobileNetPipeline(unittest.TestCase):
         self.assertTrue(np.isfinite(scores).all())
         self.assertAlmostEqual(float(scores[0].sum()), 1.0, places=5)
 
-    def test_predictor_prefers_the_promoted_candidate(self):
-        self.assertEqual(predictor.get_model_path("rice"), training.MODEL_OUT)
+    def test_predictor_uses_the_selected_production_checkpoint(self):
+        self.assertEqual(
+            predictor.get_model_path("rice"),
+            predictor.MODELS_DIR / predictor.SELECTED_MODEL_RELATIVE_PATHS["rice"],
+        )
 
 
 if __name__ == "__main__":

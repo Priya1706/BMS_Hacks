@@ -11,6 +11,8 @@ from PIL import Image
 import train_wheat_mobilenet as training
 from app.services.advisory import get_disease_advisory
 from app.services.predictor import (
+    MODELS_DIR,
+    SELECTED_MODEL_RELATIVE_PATHS,
     get_class_labels_for_crop,
     get_model_path,
     predict_crop_disease,
@@ -29,8 +31,11 @@ class TestWheatMobileNet(unittest.TestCase):
         self.assertEqual(get_disease_advisory("wheat", "Yellow Rust")["disease_id"], "stripe_rust")
         self.assertEqual(get_disease_advisory("wheat", "Powdery Mildew")["disease_id"], "powdery_mildew")
 
-    def test_predictor_selects_candidate(self):
-        self.assertEqual(get_model_path("wheat"), training.MODEL_OUT)
+    def test_predictor_uses_selected_production_checkpoint(self):
+        self.assertEqual(
+            get_model_path("wheat"),
+            MODELS_DIR / SELECTED_MODEL_RELATIVE_PATHS["wheat"],
+        )
 
     def test_candidate_load_and_predictor_inference(self):
         model = training.keras.models.load_model(training.MODEL_OUT)

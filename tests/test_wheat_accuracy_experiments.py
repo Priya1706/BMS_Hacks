@@ -8,6 +8,8 @@ import tensorflow as tf
 
 import train_wheat_mobilenet as production_training
 from app.services.predictor import (
+    MODELS_DIR,
+    SELECTED_MODEL_RELATIVE_PATHS,
     get_class_labels_for_crop,
     get_model_path,
     preprocess_image,
@@ -40,7 +42,7 @@ class WheatAccuracyExperimentTests(unittest.TestCase):
         self.assertIsNotNone(model.get_layer("training_augmentation"))
         self.assertFalse(backbone.trainable)
 
-    def test_predictor_preprocessing_and_production_path_are_unchanged(self):
+    def test_predictor_preprocessing_and_selected_production_path(self):
         samples = production_training.image_paths(
             production_training.TEST_DIR / "mildew_test"
         )
@@ -49,7 +51,10 @@ class WheatAccuracyExperimentTests(unittest.TestCase):
         expected = experiment.load_image(samples[0])
         actual = preprocess_image(samples[0])[0]
         np.testing.assert_allclose(actual, expected, rtol=0, atol=0)
-        self.assertEqual(get_model_path("wheat"), experiment.BASELINE)
+        self.assertEqual(
+            get_model_path("wheat"),
+            MODELS_DIR / SELECTED_MODEL_RELATIVE_PATHS["wheat"],
+        )
 
 
 if __name__ == "__main__":

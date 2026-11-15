@@ -5,35 +5,14 @@
  */
 
 import { findDiseaseByPrediction } from '../data/diseases.js';
-import { StorageService } from './storage.js';
+import { getApiBaseUrl as resolveApiBaseUrl } from '../config.js';
 
 export class ClassifierService {
   /**
    * Determine the API base URL dynamically
    */
   static getApiBaseUrl() {
-    const settings = StorageService.getSettings();
-    if (settings.apiEndpoint && settings.apiEndpoint.trim() !== '') {
-      return settings.apiEndpoint.trim().replace(/\/+$/, '');
-    }
-
-    if (typeof window !== 'undefined' && window.ROOTCAUSE_API_URL) {
-      return window.ROOTCAUSE_API_URL.replace(/\/+$/, '');
-    }
-
-    if (typeof window !== 'undefined' && window.location) {
-      const { protocol, hostname, port } = window.location;
-      // If frontend is being served directly by FastAPI on port 8000
-      if (port === '8000') {
-        return `${protocol}//${hostname}:8000`;
-      }
-      // If on standard web server, default to backend on port 8000
-      if (protocol === 'http:' || protocol === 'https:') {
-        return `${protocol}//${hostname}:8000`;
-      }
-    }
-
-    return '';
+    return resolveApiBaseUrl();
   }
 
   /**
@@ -46,13 +25,16 @@ export class ClassifierService {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-      const res = await fetch(`${baseUrl}/health`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' },
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
+      let res;
+      try {
+        res = await fetch(`${baseUrl}/health`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          signal: controller.signal
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
 
       if (res.ok) {
         const data = await res.json();
@@ -81,21 +63,58 @@ export class ClassifierService {
     }
 
     if (typeof imageSource === 'string' && imageSource.startsWith('data:')) {
-      const parts = imageSource.split(',');
-      const mime = parts[0].match(/:(.*?);/)[1] || 'image/jpeg';
-      const bstr = atob(parts[1]);
+      const comma = imageSource.indexOf(',');
+      if (comma < 0) throw new Error('Selected image data is malformed');
+      const header = imageSource.slice(0, comma);
+      const payload = imageSource.slice(comma + 1);
+      const mime = header.match(/^data:([^;,]+)/i)?.[1] || 'image/jpeg';
+      const bstr = atob(payload);
       let n = bstr.length;
       const u8arr = new Uint8Array(n);
       while (n--) {
         u8arr[n] = bstr.charCodeAt(n);
       }
-      return new Blob([u8arr], { type: mime });
+      const blob = new Blob([u8arr], { type: mime });
+      return /image\/svg\+xml/i.test(mime) ? await this.rasterizeImageBlob(blob) : blob;
     }
 
     // URL path (e.g. assets/images/sample_leaf_rice.svg)
     const response = await fetch(imageSource);
     if (!response.ok) throw new Error(`Could not load selected image (${response.status})`);
-    return await response.blob();
+    const blob = await response.blob();
+    const isSvg = /image\/svg\+xml/i.test(blob.type) || /\.svg(?:[?#]|$)/i.test(imageSource);
+    return isSvg ? await this.rasterizeImageBlob(blob) : blob;
+  }
+
+  /** Convert vector sample images to a raster format supported by the API. */
+  static async rasterizeImageBlob(blob, maxDimension = 800) {
+    const objectUrl = URL.createObjectURL(blob);
+    try {
+      const image = new Image();
+      await new Promise((resolve, reject) => {
+        image.onload = resolve;
+        image.onerror = () => reject(new Error('Selected image could not be decoded by this browser'));
+        image.src = objectUrl;
+      });
+
+      const scale = Math.min(1, maxDimension / Math.max(image.naturalWidth, image.naturalHeight));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+      canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Image conversion is unavailable in this browser');
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      return await new Promise((resolve, reject) => {
+        canvas.toBlob(
+          result => result ? resolve(result) : reject(new Error('Could not convert the selected image')),
+          'image/jpeg',
+          0.9
+        );
+      });
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
   }
 
   /**
@@ -124,14 +143,19 @@ export class ClassifierService {
         formData.append('image', imageBlob, filename);
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 12000); // 12 second inference timeout
-
-        const response = await fetch(`${baseUrl}/predict`, {
-          method: 'POST',
-          body: formData,
-          signal: controller.signal
-        });
-        clearTimeout(timeoutId);
+        // First inference can include TensorFlow startup and selected-model load
+        // on a CPU-only Windows host; allow a cold start before aborting.
+        const timeoutId = setTimeout(() => controller.abort(), 90000);
+        let response;
+        try {
+          response = await fetch(`${baseUrl}/predict`, {
+            method: 'POST',
+            body: formData,
+            signal: controller.signal
+          });
+        } finally {
+          clearTimeout(timeoutId);
+        }
 
         const responseData = await response.json();
 

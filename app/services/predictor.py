@@ -12,6 +12,7 @@ IMPORTANT DEVELOPMENT POLICY:
 """
 
 import io
+import logging
 from pathlib import Path
 from typing import Any, BinaryIO, Dict, List, Optional, Tuple, Union
 
@@ -20,6 +21,7 @@ from PIL import Image
 
 # Directory where trained model weights are located
 MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
+logger = logging.getLogger(__name__)
 
 SUPPORTED_CROPS = ("rice", "wheat")
 
@@ -35,7 +37,6 @@ CROP_CLASS_LABELS: Dict[str, List[str]] = {
         "Bacterial Leaf Blight",
         "Brown Spot",
         "Healthy Rice Leaf",
-        "Leaf Blast",
         "Leaf scald",
         "Sheath Blight",
     ],
@@ -47,75 +48,28 @@ CROP_CLASS_LABELS: Dict[str, List[str]] = {
     ],
 }
 
+# Explicit selected checkpoints. Experimental candidates at the model root are
+# intentionally not used as fallbacks: doing so can silently pair a checkpoint
+# with an incompatible class map.
+SELECTED_MODEL_RELATIVE_PATHS: Dict[str, Path] = {
+    "rice": Path("rice_accuracy_experiments/label_smoothing_ft30/rice_5class_label_smoothing_ft30.keras"),
+    "wheat": Path("wheat_accuracy_experiments/finetune_last20_smoothing/wheat_finetune_last20_smoothing.keras"),
+}
+_MODEL_LOAD_ERRORS: Dict[str, str] = {}
+
 
 def get_class_labels_for_crop(crop_type: str) -> List[str]:
-    """Retrieve class labels for a crop, checking for a saved JSON mapping first."""
-    normalized_crop = crop_type.strip().lower()
-    candidate_classes_file = MODELS_DIR / f"{normalized_crop}_mobilenet_candidate_classes.json"
-    if candidate_classes_file.exists():
-        try:
-            import json
-            with open(candidate_classes_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if isinstance(data, list) and len(data) > 0:
-                    return data
-        except Exception:
-            pass
-
-    classes_file = MODELS_DIR / f"{normalized_crop}_classes.json"
-    if classes_file.exists():
-        try:
-            import json
-            with open(classes_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if isinstance(data, list) and len(data) > 0:
-                    return data
-        except Exception:
-            pass
-
-    mapping_file = MODELS_DIR / f"{normalized_crop}_class_mapping.json"
-    if mapping_file.exists():
-        try:
-            import json
-            with open(mapping_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if isinstance(data, dict) and len(data) > 0:
-                    return [data[str(i)] for i in range(len(data))]
-        except Exception:
-            pass
-
-    return CROP_CLASS_LABELS.get(normalized_crop, [])
+    """Return labels for the selected checkpoint, in its trained output order."""
+    normalized_crop = str(crop_type or "").strip().lower()
+    return list(CROP_CLASS_LABELS.get(normalized_crop, []))
 
 
 def get_model_path(crop_type: str) -> Optional[Path]:
-    """Find the path to the trained model file for a given crop if it exists.
-
-    Checks for supported formats: .keras, .h5, and .tflite.
-
-    Args:
-        crop_type: 'rice' or 'wheat'.
-
-    Returns:
-        Path if a model file is found, else None.
-    """
-    normalized_crop = crop_type.strip().lower()
-    # The transfer-learning candidate was promoted after beating the fixed
-    # held-out baseline without collapsing predictions. Keep the original
-    # rice_model.keras as a fallback and preserve all wheat lookup behavior.
-    candidate_names = (
-        ["rice_mobilenet_candidate.keras", "rice_model.keras", "rice_model.h5", "rice_model.tflite"]
-        if normalized_crop == "rice" else
-        ["wheat_mobilenet_candidate.keras", "wheat_model.keras", "wheat_model.h5", "wheat_model.tflite"]
-        if normalized_crop == "wheat" else
-        [f"{normalized_crop}_model{ext}" for ext in (".keras", ".h5", ".tflite")]
-    )
-
-    for name in candidate_names:
-        model_path = MODELS_DIR / name
-        if model_path.exists() and model_path.is_file():
-            return model_path
-
-    return None
+    """Return the explicitly selected production checkpoint for a crop."""
+    normalized_crop = str(crop_type or "").strip().lower()
+    relative_path = SELECTED_MODEL_RELATIVE_PATHS.get(normalized_crop)
+    model_path = MODELS_DIR / relative_path if relative_path is not None else None
+    return model_path if model_path is not None and model_path.is_file() else None
 
 
 def is_model_available(crop_type: str) -> bool:
@@ -139,11 +93,13 @@ def get_model_status() -> Dict[str, Any]:
         status["crops"][crop] = {
             "available": model_path is not None,
             "path": str(model_path) if model_path else None,
-            "expected_file": model_path.name if model_path else (
-                "rice_mobilenet_candidate.keras" if crop == "rice" else f"{crop}_model.keras"
-            ),
+            "expected_file": str(SELECTED_MODEL_RELATIVE_PATHS[crop]),
             "framework": "TensorFlow / Keras",
             "target_input_shape": [1, TARGET_IMAGE_SIZE[0], TARGET_IMAGE_SIZE[1], 3],
+            "output_classes": len(CROP_CLASS_LABELS[crop]),
+            "class_labels": get_class_labels_for_crop(crop),
+            "loaded": crop in _MODEL_CACHE,
+            "load_error": _MODEL_LOAD_ERRORS.get(crop),
         }
 
     return status
@@ -216,18 +172,36 @@ def load_model_for_crop(crop_type: str) -> Optional[Any]:
     try:
         import tensorflow as tf
 
+        expected_classes = len(get_class_labels_for_crop(normalized_crop))
         if model_path.suffix == ".tflite":
             # TFLite interpreter for low-end mobile deployment
             interpreter = tf.lite.Interpreter(model_path=str(model_path))
             interpreter.allocate_tensors()
+            input_shape = tuple(interpreter.get_input_details()[0]["shape"])
+            output_shape = tuple(interpreter.get_output_details()[0]["shape"])
+            if input_shape != (1, *TARGET_IMAGE_SIZE, 3) or output_shape[-1] != expected_classes:
+                raise ValueError(
+                    f"Selected {normalized_crop} TFLite model has incompatible shapes "
+                    f"{input_shape}->{output_shape}; expected (1,224,224,3)->{expected_classes} classes"
+                )
             _MODEL_CACHE[normalized_crop] = interpreter
+            _MODEL_LOAD_ERRORS.pop(normalized_crop, None)
             return interpreter
 
         model = tf.keras.models.load_model(str(model_path))
+        input_shape = tuple(model.input_shape)
+        output_shape = tuple(model.output_shape)
+        if input_shape != (None, *TARGET_IMAGE_SIZE, 3) or output_shape[-1] != expected_classes:
+            raise ValueError(
+                f"Selected {normalized_crop} model has incompatible shapes "
+                f"{input_shape}->{output_shape}; expected (None,224,224,3)->{expected_classes} classes"
+            )
         _MODEL_CACHE[normalized_crop] = model
+        _MODEL_LOAD_ERRORS.pop(normalized_crop, None)
         return model
     except Exception as exc:
-        # If loading fails (corrupted model file, etc.), log and return None
+        _MODEL_LOAD_ERRORS[normalized_crop] = str(exc)
+        logger.exception("Failed to load selected %s model at %s", normalized_crop, model_path)
         return None
 
 
@@ -263,10 +237,8 @@ def predict_crop_disease(
 
     if model is None:
         # NO MODEL WEIGHTS FOUND: Return informative placeholder response
-        expected_file = (
-            "rice_mobilenet_candidate.keras" if normalized_crop == "rice"
-            else f"{normalized_crop}_model.keras"
-        )
+        expected_file = str(SELECTED_MODEL_RELATIVE_PATHS[normalized_crop])
+        load_error = _MODEL_LOAD_ERRORS.get(normalized_crop)
         return {
             "status": "model_not_available",
             "crop_type": normalized_crop,
@@ -274,8 +246,9 @@ def predict_crop_disease(
             "confidence": None,
             "is_model_loaded": False,
             "message": (
-                f"Trained TensorFlow model for '{normalized_crop}' is not currently available on the server. "
-                f"Please place the trained weights file ('{expected_file}') in the 'app/models/' directory."
+                f"Selected model for '{normalized_crop}' is unavailable or could not be loaded. "
+                f"Expected checkpoint: 'app/models/{expected_file}'."
+                + (f" Load error: {load_error}" if load_error else "")
             ),
             "model_info": {
                 "crop": normalized_crop,
@@ -303,16 +276,17 @@ def predict_crop_disease(
             # Keras model inference
             raw_predictions = model.predict(batch_data, verbose=0)[0]
 
+        raw_predictions = np.asarray(raw_predictions, dtype=np.float32).reshape(-1)
+        class_labels = get_class_labels_for_crop(normalized_crop)
+        if raw_predictions.size != len(class_labels) or not np.isfinite(raw_predictions).all():
+            raise ValueError(
+                f"Model returned {raw_predictions.size} scores for {len(class_labels)} configured classes"
+            )
         predicted_idx = int(np.argmax(raw_predictions))
         confidence = float(raw_predictions[predicted_idx])
 
         # Map to class label if available
-        class_labels = get_class_labels_for_crop(normalized_crop)
-        predicted_disease = (
-            class_labels[predicted_idx]
-            if predicted_idx < len(class_labels)
-            else f"class_{predicted_idx}"
-        )
+        predicted_disease = class_labels[predicted_idx]
 
         return {
             "status": "success",

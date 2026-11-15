@@ -37,13 +37,22 @@ export function getApiBaseUrl() {
   const saved = normalizeApiBase(readSavedEndpoint());
   if (saved) return saved;
 
-  const configured = (typeof window !== 'undefined' && window.ROOTCAUSE_API_BASE)
-    ? normalizeApiBase(window.ROOTCAUSE_API_BASE)
+  const configuredValue = typeof window !== 'undefined'
+    ? (window.ROOTCAUSE_API_BASE || window.ROOTCAUSE_API_URL)
     : '';
+  const configured = normalizeApiBase(configuredValue);
   if (configured) return configured;
 
   if (typeof window !== 'undefined' && window.location && /^https?:$/.test(window.location.protocol)) {
-    return window.location.origin;
+    const { protocol, hostname, port, origin } = window.location;
+    if (port === '8000') return origin;
+
+    // The development frontend is commonly served by Live Server while the
+    // API runs on port 8000. On a phone, hostname is the computer's LAN IP.
+    const localHost = ['localhost', '127.0.0.1', '::1', '0.0.0.0'].includes(hostname);
+    const staticDevPort = ['3000', '4173', '5000', '5173', '5500', '8080', '8081'].includes(port);
+    if (localHost || staticDevPort) return `${protocol}//${hostname}:8000`;
+    return origin;
   }
   return '';
 }

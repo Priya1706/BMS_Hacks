@@ -1,0 +1,5 @@
+﻿actual/predicted,Black Rust,Brown Rust,Yellow Rust,Powdery Mildew
+Black Rust,22,28,0,0
+Brown Rust,2,42,2,4
+Yellow Rust,0,0,50,0
+Powdery Mildew,6,5,1,38

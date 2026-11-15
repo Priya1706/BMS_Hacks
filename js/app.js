@@ -388,17 +388,14 @@ class RootCauseApp {
   }
 
   onEnterCaptureScreen() {
+    // A capture screen always starts a new scan. Clear any sample or previous
+    // upload so the gallery can be opened and a fresh image can be selected.
+    this.resetCaptureView();
+
     // Update Crop Indicator
     const cropLabel = document.getElementById('capture-selected-crop');
     if (cropLabel) {
       cropLabel.textContent = this.currentCrop === 'rice' ? 'Rice Paddy (धान)' : 'Wheat (गेहूं)';
-    }
-
-    // Default to active tab mode
-    const tabCamera = document.getElementById('tab-camera');
-    if (tabCamera.classList.contains('active') && !this.currentImageData) {
-      const videoElem = document.getElementById('camera-video-elem');
-      CameraService.startCamera(videoElem);
     }
   }
 

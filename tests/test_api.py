@@ -115,7 +115,7 @@ class TestAPIEndpoints(unittest.TestCase):
         self.assertTrue(data["prediction"]["is_model_loaded"])
         self.assertIn(data["prediction"]["prediction"], {
             "Bacterial Leaf Blight", "Brown Spot", "Healthy Rice Leaf",
-            "Leaf Blast", "Leaf scald", "Sheath Blight",
+            "Leaf scald", "Sheath Blight",
         })
         # Verify advisory is returned with placeholder disclaimer
         self.assertTrue(data["advisory"]["is_placeholder"])
@@ -169,8 +169,8 @@ class TestAPIEndpoints(unittest.TestCase):
         self.assertGreater(len(data["issues"]), 0)
         self.assertGreater(len(data["suggestions"]), 0)
 
-    def test_predict_low_resolution_image(self):
-        """Test POST /predict with low-resolution image (< 224x224) returns 400."""
+    def test_predict_tiny_image(self):
+        """Images too small for useful resize-based inference are rejected."""
         upload = create_test_upload_file(width=120, height=120, pattern="sharp")
         response = predict(crop_type="rice", image=upload)
         status_code, data = parse_response(response)
@@ -178,6 +178,7 @@ class TestAPIEndpoints(unittest.TestCase):
         self.assertEqual(status_code, 400)
         self.assertEqual(data["status"], "quality_check_failed")
         self.assertTrue(any("resolution" in issue.lower() for issue in data["issues"]))
+
 
     def test_predict_blurry_image(self):
         """Test POST /predict with blurry image returns 400 with retake suggestion."""

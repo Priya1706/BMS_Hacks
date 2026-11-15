@@ -1,0 +1,22 @@
+﻿image,actual,predicted,confidence
+data\rice\processed\pristine\Brown Spot\Brown_spot (166).jpg,Brown Spot,Leaf scald,0.45906377
+data\rice\processed\pristine\Brown Spot\Brown_spot (176).jpg,Brown Spot,Sheath Blight,0.39935622
+data\rice\processed\pristine\Brown Spot\Brown_spot (186).jpg,Brown Spot,Healthy Rice Leaf,0.84347469
+data\rice\processed\pristine\Brown Spot\Brown_spot (201).jpg,Brown Spot,Bacterial Leaf Blight,0.33417124
+data\rice\processed\pristine\Brown Spot\Brown_spot (209).jpg,Brown Spot,Healthy Rice Leaf,0.78789222
+data\rice\processed\pristine\Brown Spot\Brown_spot (212).jpg,Brown Spot,Healthy Rice Leaf,0.60745811
+data\rice\processed\pristine\Brown Spot\Brown_spot (213).jpg,Brown Spot,Leaf scald,0.43841302
+data\rice\processed\pristine\Brown Spot\Brown_spot (215).jpg,Brown Spot,Leaf scald,0.67717314
+data\rice\processed\pristine\Healthy Rice Leaf\Healthy_rice_leaf (21).jpg,Healthy Rice Leaf,Sheath Blight,0.55263871
+data\rice\processed\pristine\Healthy Rice Leaf\Healthy_rice_leaf (25).jpg,Healthy Rice Leaf,Sheath Blight,0.59920877
+data\rice\processed\pristine\Leaf scald\Leaf_scald (18).jpg,Leaf scald,Brown Spot,0.25232884
+data\rice\processed\pristine\Leaf scald\Leaf_scald (20).jpg,Leaf scald,Sheath Blight,0.54819161
+data\rice\processed\pristine\Leaf scald\Leaf_scald (93).jpg,Leaf scald,Healthy Rice Leaf,0.47549894
+data\rice\processed\pristine\Sheath Blight\Sheath_Blight (112).jpg,Sheath Blight,Brown Spot,0.48658457
+data\rice\processed\pristine\Sheath Blight\Sheath_Blight (12).jpg,Sheath Blight,Healthy Rice Leaf,0.95932156
+data\rice\processed\pristine\Sheath Blight\Sheath_Blight (122).jpg,Sheath Blight,Brown Spot,0.36188492
+data\rice\processed\pristine\Sheath Blight\Sheath_Blight (138).jpg,Sheath Blight,Brown Spot,0.37810576
+data\rice\processed\pristine\Sheath Blight\Sheath_Blight (15).jpg,Sheath Blight,Healthy Rice Leaf,0.44394758
+data\rice\processed\pristine\Sheath Blight\Sheath_Blight (16).jpg,Sheath Blight,Healthy Rice Leaf,0.42605019
+data\rice\processed\pristine\Sheath Blight\Sheath_Blight (80).jpg,Sheath Blight,Leaf scald,0.45227078
+data\rice\processed\pristine\Sheath Blight\IMG_20231006_164304.jpg,Sheath Blight,Leaf scald,0.47898686

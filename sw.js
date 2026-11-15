@@ -3,7 +3,7 @@
  * Pre-caches UI assets, CSS, images, and disease datasets
  */
 
-const CACHE_NAME = 'rootcause-v1.1.0';
+const CACHE_NAME = 'rootcause-v1.2.1';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const ASSETS_TO_CACHE = [
   './css/components.css',
   './css/animations.css',
   './js/app.js',
+  './js/config.js',
   './js/data/diseases.js',
   './js/data/translations.js',
   './js/data/sample_history.js',
