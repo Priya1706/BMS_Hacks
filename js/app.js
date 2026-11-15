@@ -10,6 +10,7 @@ import { StorageService } from './services/storage.js';
 import { ClassifierService } from './services/classifier.js';
 import { AudioService } from './services/audio.js';
 import { CameraService } from './services/camera.js';
+import { assessFieldObservations, getQuestionnaireOptions } from './services/contextualAssessment.js';
 
 class RootCauseApp {
   constructor() {
@@ -19,6 +20,8 @@ class RootCauseApp {
     this.currentImageData = null;
     this.currentDiagnosis = null;
     this.currentDisease = null;
+    this.questionnaireSession = null;
+    this.isViewingCatalogDisease = false;
     this.currentLanguage = 'en';
     this.userSettings = StorageService.getSettings();
 
@@ -38,6 +41,7 @@ class RootCauseApp {
     this.applyTranslations(this.currentLanguage);
     this.setupNavigation();
     this.setupCameraAndCapture();
+    this.setupQuestionnaire();
     this.setupLanguageScreen();
     this.setupHistoryScreen();
     this.setupGuidesScreen();
@@ -125,6 +129,24 @@ class RootCauseApp {
       this.renderDashboardRecent();
     } else if (screenId === 'screen-guides') {
       this.renderGuidesList('all');
+    } else if (screenId === 'screen-field-questionnaire') {
+      if (this.currentDiagnosis) {
+        this.currentDisease = this.currentDiagnosis.disease;
+        this.isViewingCatalogDisease = false;
+      }
+      this.renderQuestionnaire();
+    } else if (screenId === 'screen-questionnaire-consent') {
+      if (this.currentDiagnosis) {
+        this.currentDisease = this.currentDiagnosis.disease;
+        this.isViewingCatalogDisease = false;
+      }
+      this.renderQuestionnairePrediction('questionnaire-prediction-consent');
+    } else if (screenId === 'screen-results' && this.currentDiagnosis) {
+      this.currentDisease = this.currentDiagnosis.disease;
+      this.isViewingCatalogDisease = false;
+      this.renderResultsScreen(this.currentDiagnosis);
+    } else if (screenId === 'screen-advisory' && this.currentDisease) {
+      this.renderAdvisoryScreen(this.currentDisease);
     }
   }
 
@@ -148,7 +170,7 @@ class RootCauseApp {
     } else {
       topBar.style.display = 'flex';
       // Show back button on inner flow screens
-      if (['screen-crop-select', 'screen-capture', 'screen-results', 'screen-advisory', 'screen-languages'].includes(screenId)) {
+      if (['screen-crop-select', 'screen-capture', 'screen-questionnaire-consent', 'screen-field-questionnaire', 'screen-results', 'screen-advisory', 'screen-languages'].includes(screenId)) {
         topBackBtn.style.display = 'flex';
       } else {
         topBackBtn.style.display = 'none';
@@ -162,6 +184,8 @@ class RootCauseApp {
         'screen-dashboard': 'RootCause',
         'screen-crop-select': getTranslation(this.currentLanguage, 'cropSelectHeading'),
         'screen-capture': getTranslation(this.currentLanguage, 'captureHeading'),
+        'screen-questionnaire-consent': 'Field Context',
+        'screen-field-questionnaire': 'Field Observations',
         'screen-results': getTranslation(this.currentLanguage, 'resultsHeading'),
         'screen-advisory': getTranslation(this.currentLanguage, 'advisoryHeading'),
         'screen-languages': getTranslation(this.currentLanguage, 'languageSection'),
@@ -262,14 +286,19 @@ class RootCauseApp {
     // Results Screen buttons
     document.getElementById('btn-results-view-advisory').addEventListener('click', () => {
       if (this.currentDisease) {
-        this.renderAdvisoryScreen(this.currentDisease);
         this.navigateTo('screen-advisory');
       }
     });
 
     document.getElementById('btn-results-save-history').addEventListener('click', () => {
       if (this.currentDiagnosis) {
-        StorageService.saveDiagnosis(this.currentDiagnosis);
+        const savedDiagnosis = {
+          ...this.currentDiagnosis,
+          questionnaireSessionId: this.questionnaireSession?.id || null,
+          fieldObservations: this.questionnaireSession?.answers || null,
+          contextualAssessment: this.questionnaireSession?.assessment || null
+        };
+        StorageService.saveDiagnosis(savedDiagnosis);
         alert('Diagnosis successfully saved to local history!');
       }
     });
@@ -388,6 +417,13 @@ class RootCauseApp {
   }
 
   onEnterCaptureScreen() {
+    // A new scan starts a new diagnosis session and cannot inherit old answers.
+    this.currentDiagnosis = null;
+    this.currentDisease = null;
+    this.questionnaireSession = null;
+    this.isViewingCatalogDisease = false;
+    const notes = document.getElementById('input-farmer-notes');
+    if (notes) notes.value = '';
     // A capture screen always starts a new scan. Clear any sample or previous
     // upload so the gallery can be opened and a fresh image can be selected.
     this.resetCaptureView();
@@ -463,16 +499,31 @@ class RootCauseApp {
       const region = document.getElementById('input-farmer-region').value.trim();
       const notes = document.getElementById('input-farmer-notes').value.trim();
 
-      result.farmerName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Local Farmer';
-      result.region = region || 'Farm Field';
-      result.notes = notes;
-      result.imageThumbnail = this.currentImageData || this.SAMPLE_IMAGES[this.currentCrop];
-
-      this.currentDiagnosis = result;
+      // Keep model output fields as returned by ClassifierService. Farmer and
+      // questionnaire information are attached as separate session metadata.
+      this.currentDiagnosis = Object.freeze({
+        ...result,
+        farmerName: (firstName || lastName) ? `${firstName} ${lastName}`.trim() : 'Local Farmer',
+        region: region || 'Farm Field',
+        notes,
+        imageThumbnail: this.currentImageData || this.SAMPLE_IMAGES[this.currentCrop]
+      });
       this.currentDisease = result.disease;
+      this.isViewingCatalogDisease = false;
+      this.questionnaireSession = {
+        id: `diagnosis_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        crop: result.crop || this.currentCrop,
+        diseaseId: this.currentDisease?.id || null,
+        answers: null,
+        assessment: null,
+        skipped: false
+      };
 
-      this.renderResultsScreen(result);
-      this.navigateTo('screen-results');
+      if (result.isBackend && !result.isUnavailable && !result.isQualityFailed && result.disease) {
+        this.navigateTo('screen-questionnaire-consent');
+      } else {
+        this.navigateTo('screen-results');
+      }
     } catch (err) {
       alert('Diagnosis failed: ' + err.message);
     } finally {
@@ -492,6 +543,7 @@ class RootCauseApp {
     const btnAdvisory = document.getElementById('btn-results-view-advisory');
     const confidenceBox = document.querySelector('.confidence-meter-box');
     const actions = document.querySelector('#screen-results > div[style*="flex-direction: column"]');
+    document.getElementById('results-context-section').style.display = 'none';
     qualityBox.style.display = result.isQualityFailed ? 'block' : 'none';
     unavailableBox.style.display = result.isUnavailable ? 'block' : 'none';
     unavailableBox.querySelector('#results-unavailable-message').textContent = result.message || 'Prediction service unavailable.';
@@ -510,6 +562,8 @@ class RootCauseApp {
     btnAdvisory.style.display = 'none';
     if (actions) actions.style.display = result.isUnavailable || result.isQualityFailed ? 'none' : '';
     if (result.isUnavailable || result.isQualityFailed) return;
+
+    this.renderFieldContext('results-context-section', 'results-observation-list', 'results-context-assessment');
 
     const leafImg = document.getElementById('results-leaf-img');
     const cropTag = document.getElementById('results-crop-tag');
@@ -593,6 +647,181 @@ class RootCauseApp {
 
     // Expert warning
     document.getElementById('advisory-warning-text').textContent = disease.expertWarning;
+    this.renderFieldContext('advisory-field-context', 'advisory-observation-list', 'advisory-context-assessment');
+  }
+
+  setupQuestionnaire() {
+    document.getElementById('btn-questionnaire-yes').addEventListener('click', () => {
+      if (!this.questionnaireSession) return;
+      this.navigateTo('screen-field-questionnaire');
+    });
+    document.getElementById('btn-questionnaire-no').addEventListener('click', () => {
+      if (this.questionnaireSession) {
+        this.questionnaireSession = { ...this.questionnaireSession, answers: null, assessment: null, skipped: true };
+      }
+      this.navigateTo('screen-results');
+    });
+    document.getElementById('btn-questionnaire-cancel').addEventListener('click', () => this.goBack());
+
+    const form = document.getElementById('field-questionnaire-form');
+    form.addEventListener('input', () => this.saveQuestionnaireDraft());
+    form.addEventListener('change', () => this.saveQuestionnaireDraft());
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!this.questionnaireSession || !this.currentDisease || !this.currentDiagnosis) return;
+      this.saveQuestionnaireDraft();
+      const answers = this.questionnaireSession.answers || {};
+      this.questionnaireSession = {
+        ...this.questionnaireSession,
+        assessment: assessFieldObservations(this.currentDisease, answers),
+        skipped: false
+      };
+      this.navigateTo('screen-results');
+    });
+  }
+
+  renderQuestionnaire() {
+    const session = this.questionnaireSession;
+    if (!session) return;
+    const config = getQuestionnaireOptions(session.crop);
+    const container = document.getElementById('questionnaire-fields');
+    this.renderQuestionnairePrediction('questionnaire-prediction-form');
+    document.getElementById('questionnaire-heading').textContent = `${session.crop === 'rice' ? 'Rice' : 'Wheat'} field observations`;
+    container.replaceChildren();
+    if (!config) return;
+
+    const answers = session.answers || {};
+    const fieldset = document.createElement('fieldset');
+    fieldset.className = 'questionnaire-fieldset';
+    const legend = document.createElement('legend');
+    legend.textContent = 'What symptoms do you see? Select all that apply.';
+    fieldset.append(legend);
+    config.symptoms.forEach(([value, label]) => {
+      const row = document.createElement('label');
+      row.className = 'questionnaire-choice';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.name = 'symptoms';
+      input.value = value;
+      input.checked = (answers.symptoms || []).includes(value);
+      const text = document.createElement('span');
+      text.textContent = label;
+      row.append(input, text);
+      fieldset.append(row);
+    });
+    container.append(fieldset);
+
+    const selectQuestion = (key, title, choices) => {
+      const group = document.createElement('div');
+      group.className = 'form-group questionnaire-select-group';
+      const label = document.createElement('label');
+      label.className = 'form-label';
+      label.htmlFor = `questionnaire-${key}`;
+      label.textContent = title;
+      const select = document.createElement('select');
+      select.className = 'form-select';
+      select.id = `questionnaire-${key}`;
+      select.name = key;
+      choices.forEach(([value, text]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = text;
+        select.append(option);
+      });
+      select.value = answers[key] || 'unsure';
+      group.append(label, select);
+      container.append(group);
+    };
+    selectQuestion('affectedArea', 'How much of the crop area is affected?', [['unsure','Not sure'],['under_5','Less than 5%'],['5_25','About 5–25%'],['26_50','About 26–50%'],['over_50','More than 50%']]);
+    selectQuestion('growthStage', 'What is the crop growth stage?', [['unsure','Not sure'],['seedling','Seedling'],['vegetative','Vegetative / tillering'],['flowering','Flowering / heading'],['grain_fill','Grain filling / nearing harvest']]);
+    selectQuestion('duration', 'How long have you noticed the symptoms?', [['unsure','Not sure'],['under_3_days','Less than 3 days'],['3_7_days','3–7 days'],['1_3_weeks','1–3 weeks'],['over_3_weeks','More than 3 weeks']]);
+    selectQuestion('spread', 'Are symptoms spreading to more leaves or plants?', [['unsure','Not sure'],['yes','Yes'],['no','No']]);
+    selectQuestion('weather', 'Recent weather around the field', [['unsure','Not sure'],['rain_humid','Recent rain or humid conditions'],['dry','Mostly dry conditions']]);
+    selectQuestion('irrigation', session.crop === 'rice' ? 'Recent irrigation or field water conditions' : 'Recent wheat irrigation', config.irrigation);
+  }
+
+  renderQuestionnairePrediction(elementId) {
+    const container = document.getElementById(elementId);
+    const diagnosis = this.currentDiagnosis;
+    container.replaceChildren();
+    if (!diagnosis) return;
+    const crop = document.createElement('div');
+    crop.textContent = `Crop: ${diagnosis.cropDisplayName || diagnosis.crop}`;
+    const prediction = document.createElement('div');
+    prediction.textContent = `AI image prediction: ${diagnosis.diseaseName || diagnosis.prediction}`;
+    const confidence = document.createElement('div');
+    confidence.textContent = `Original model confidence: ${diagnosis.confidence}%`;
+    container.append(crop, prediction, confidence);
+  }
+
+  saveQuestionnaireDraft() {
+    const session = this.questionnaireSession;
+    if (!session || this.currentScreen !== 'screen-field-questionnaire') return;
+    const form = document.getElementById('field-questionnaire-form');
+    const data = new FormData(form);
+    session.answers = {
+      symptoms: data.getAll('symptoms'),
+      affectedArea: data.get('affectedArea') || 'unsure',
+      growthStage: data.get('growthStage') || 'unsure',
+      duration: data.get('duration') || 'unsure',
+      spread: data.get('spread') || 'unsure',
+      weather: data.get('weather') || 'unsure',
+      irrigation: data.get('irrigation') || 'unsure'
+    };
+  }
+
+  renderFieldContext(sectionId, listId, assessmentId) {
+    const section = document.getElementById(sectionId);
+    const list = document.getElementById(listId);
+    const assessmentElement = document.getElementById(assessmentId);
+    const session = this.questionnaireSession;
+    if (!session?.answers || session.skipped || this.isViewingCatalogDisease || !this.currentDisease || session.diseaseId !== this.currentDisease.id) {
+      section.style.display = 'none';
+      return;
+    }
+    const labels = this.getObservationLabels(session.crop, session.answers);
+    if (this.currentDiagnosis?.notes) labels.push(['Earlier field notes', this.currentDiagnosis.notes]);
+    list.replaceChildren();
+    if (labels.length === 0) {
+      const item = document.createElement('dd');
+      item.textContent = 'No field answers were provided.';
+      list.append(item);
+    } else {
+      labels.forEach(([label, value]) => {
+        const term = document.createElement('dt');
+        term.textContent = label;
+        const description = document.createElement('dd');
+        description.textContent = value;
+        list.append(term, description);
+      });
+    }
+    const assessment = session.assessment || assessFieldObservations(this.currentDisease, session.answers);
+    assessmentElement.replaceChildren();
+    const heading = document.createElement('strong');
+    heading.textContent = assessment.title;
+    const explanation = document.createElement('p');
+    explanation.textContent = assessment.explanation;
+    assessmentElement.dataset.status = assessment.status;
+    assessmentElement.append(heading, explanation);
+    section.style.display = 'block';
+  }
+
+  getObservationLabels(crop, answers) {
+    const config = getQuestionnaireOptions(crop);
+    if (!config) return [];
+    const output = [];
+    const selected = (answers.symptoms || []).map(value => config.symptoms.find(item => item[0] === value)?.[1]).filter(Boolean);
+    if (selected.length) output.push(['Visible symptoms', selected.join('; ')]);
+    const fields = [
+      ['affectedArea', 'Affected area', {under_5:'Less than 5%', '5_25':'About 5–25%', '26_50':'About 26–50%', over_50:'More than 50%'}],
+      ['growthStage', 'Growth stage', {seedling:'Seedling', vegetative:'Vegetative / tillering', flowering:'Flowering / heading', grain_fill:'Grain filling / nearing harvest'}],
+      ['duration', 'Symptom duration', {under_3_days:'Less than 3 days', '3_7_days':'3–7 days', '1_3_weeks':'1–3 weeks', over_3_weeks:'More than 3 weeks'}],
+      ['spread', 'Spreading', {yes:'Yes', no:'No'}],
+      ['weather', 'Recent weather', {rain_humid:'Recent rain or humid conditions', dry:'Mostly dry conditions'}],
+      ['irrigation', 'Irrigation', Object.fromEntries(config.irrigation.map(([value,label]) => [value,label]))]
+    ];
+    fields.forEach(([key,label,map]) => { if (answers[key] && answers[key] !== 'unsure' && map[answers[key]]) output.push([label,map[answers[key]]]); });
+    return output;
   }
 
   /**
@@ -752,6 +981,7 @@ class RootCauseApp {
         if (record) {
           const disease = getDiseaseById(record.diseaseId);
           if (disease) {
+            this.isViewingCatalogDisease = true;
             this.currentDisease = disease;
             this.renderAdvisoryScreen(disease);
             this.navigateTo('screen-advisory');
@@ -799,6 +1029,7 @@ class RootCauseApp {
         if (record) {
           const disease = getDiseaseById(record.diseaseId);
           if (disease) {
+            this.isViewingCatalogDisease = true;
             this.currentDisease = disease;
             this.renderAdvisoryScreen(disease);
             this.navigateTo('screen-advisory');
@@ -855,6 +1086,7 @@ class RootCauseApp {
         const id = item.getAttribute('data-disease-id');
         const disease = getDiseaseById(id);
         if (disease) {
+          this.isViewingCatalogDisease = true;
           this.currentDisease = disease;
           this.renderAdvisoryScreen(disease);
           this.navigateTo('screen-advisory');

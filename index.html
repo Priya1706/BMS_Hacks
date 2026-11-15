@@ -15,7 +15,7 @@
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/components.css?v=field-context-compact-v3">
   <link rel="stylesheet" href="css/animations.css">
 </head>
 <body>
@@ -414,9 +414,54 @@
 
 
           <!-- ==========================================================
+               OPTIONAL POST-PREDICTION QUESTIONNAIRE
+               ========================================================== -->
+          <section id="screen-questionnaire-consent" class="app-screen field-context-consent-screen">
+            <div class="field-context-intro">
+              <span class="field-context-intro-icon" aria-hidden="true">🌱</span>
+              <div>
+                <h2>Tell us about your crop</h2>
+                <p>Your observations can help us provide a more contextual assessment.</p>
+              </div>
+            </div>
+            <div class="field-context-diagnosis">
+              <h3>Your AI diagnosis</h3>
+              <div id="questionnaire-prediction-consent" class="questionnaire-prediction-card"></div>
+            </div>
+            <div class="field-context-consent-question">
+              <h3>Would you like to provide additional information about your crop?</h3>
+              <p>Your original AI prediction and confidence stay unchanged.</p>
+            </div>
+            <div class="field-context-consent-actions">
+              <button id="btn-questionnaire-yes" class="btn btn-primary">
+                Yes, provide additional information
+              </button>
+              <button id="btn-questionnaire-no" class="btn btn-secondary">
+                No, continue to results
+              </button>
+            </div>
+          </section>
+
+          <section id="screen-field-questionnaire" class="app-screen">
+            <div class="card questionnaire-heading-card">
+              <h2 id="questionnaire-heading">Field observations</h2>
+              <p>These optional answers add context only. They do not change the AI prediction or its confidence.</p>
+            </div>
+            <div id="questionnaire-prediction-form" class="questionnaire-prediction-card"></div>
+            <form id="field-questionnaire-form">
+              <div id="questionnaire-fields"></div>
+              <div class="questionnaire-actions">
+                <button type="submit" class="btn btn-primary">Continue to results</button>
+                <button id="btn-questionnaire-cancel" type="button" class="btn btn-outline">Back</button>
+              </div>
+            </form>
+          </section>
+
+          <!-- ==========================================================
                SCREEN 5: Disease Detection Results
                ========================================================== -->
           <section id="screen-results" class="app-screen">
+            <h3 class="results-section-heading">AI Image Prediction</h3>
             <div class="results-card-hero">
               <!-- Leaf Image View with Diagnostic Scanner Box -->
               <div class="results-image-view">
@@ -461,6 +506,13 @@
                 </div>
               </div>
             </div>
+
+            <section id="results-context-section" class="context-assessment-card" style="display: none;" aria-live="polite">
+              <h3>Additional Field Observations</h3>
+              <dl id="results-observation-list" class="context-observation-list"></dl>
+              <div id="results-context-assessment" class="context-assessment-status"></div>
+              <p class="context-disclaimer">This is a qualitative comparison, not a confirmed diagnosis. It does not change the AI prediction or confidence score.</p>
+            </section>
 
             <!-- Image Quality Failure Box (Displayed when OpenCV quality check fails) -->
             <div id="results-quality-box" class="quality-alert-box" style="display: none;">
@@ -542,6 +594,13 @@
                 <span id="advisory-severity-badge" class="badge badge-high">High Priority</span>
               </div>
             </div>
+
+            <section id="advisory-field-context" class="context-assessment-card" style="display: none;" aria-live="polite">
+              <h3>Your Field Observations</h3>
+              <dl id="advisory-observation-list" class="context-observation-list"></dl>
+              <div id="advisory-context-assessment" class="context-assessment-status"></div>
+              <p class="context-disclaimer">These observations provide context only; the advisory above remains tied to the original AI prediction.</p>
+            </section>
 
             <!-- Voice Reading / Audio Player Bar -->
             <div class="audio-advisory-bar">
